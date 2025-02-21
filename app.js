@@ -73,7 +73,7 @@ async function createHarvestEntryWithNotes(issues, selectedIssueKeys) {
 				reject(new Error(stderr));
 				return;
 			}
-			console.log(`Notes successfully added: \n${stdout}`);
+			console.log(`Timer started: \n${stdout}`);
 			resolve();
 		});
 	});
