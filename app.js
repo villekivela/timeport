@@ -1,261 +1,47 @@
-import { exec } from 'child_process';
 import inquirer from 'inquirer';
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
+import { JiraService } from './services/jira.service.js';
+import { HarvestService } from './services/harvest.service.js';
+import { StartTimerCommand, UpdateTimerCommand, StopTimerCommand } from './commands/index.js';
+import { Logger } from './utils/logger.js';
 
-// Load environment variables from .env file
-dotenv.config();
+class TimeTracker {
+	constructor() {
+		const jiraService = new JiraService();
+		const harvestService = new HarvestService();
 
-const JIRA_USERNAME = process.env.JIRA_USERNAME;
-const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
-const JIRA_BASE_URL = process.env.JIRA_BASE_URL;
-const HRVST_PROJECT_ALIAS = process.env.HRVST_PROJECT_ALIAS;
-
-// Check if all required environment variables are set
-if (!JIRA_USERNAME || !JIRA_API_TOKEN || !JIRA_BASE_URL || !HRVST_PROJECT_ALIAS) {
-	console.error('One or more environment variables are missing.');
-	process.exit(1);
-}
-
-/**
- * Fetches Jira issues assigned to the current user that are not completed.
- * @async
- * @returns {Promise<Array<{name: string, value: string}>>} Array of Jira issues formatted for inquirer
- * @throws {Error} If the API request fails
- */
-async function fetchJiraIssues() {
-	const JQL_QUERY = `assignee = currentUser() AND statusCategory != Done AND issuetype != Sub-task`;
-	const API_URL = `${JIRA_BASE_URL}/rest/api/3/search?jql=${encodeURIComponent(JQL_QUERY)}`;
-
-	const response = await fetch(API_URL, {
-		method: 'GET',
-		headers: {
-			Authorization: `Basic ${Buffer.from(`${JIRA_USERNAME}:${JIRA_API_TOKEN}`).toString(
-				'base64'
-			)}`,
-			Accept: 'application/json',
-		},
-	});
-
-	if (!response.ok) {
-		throw new Error(`Failed to fetch Jira issues: ${response.statusText}`);
+		this.jiraService = jiraService;
+		this.commands = {
+			start: new StartTimerCommand(harvestService),
+			update: new UpdateTimerCommand(harvestService),
+			stop: new StopTimerCommand(harvestService),
+		};
 	}
 
-	const data = await response.json();
-	return data.issues.map((issue) => ({
-		name: `[${issue.key}] ${issue.fields.summary}`,
-		value: issue.key,
-	}));
-}
+	async run() {
+		try {
+			const issues = await this.jiraService.fetchUserIssues();
 
-/**
- * Creates a Harvest time entry with notes from selected Jira issues
- * @async
- * @param {Array<{name: string, value: string}>} issues - All available Jira issues
- * @param {Array<string>} selectedIssues - Array of selected issue keys
- * @returns {Promise<void>}
- */
-async function createHarvestEntryWithNotes(issues, selectedIssues) {
-	const notes = selectedIssues
-		.map((issueKey) => {
-			const issue = issues.find((issue) => issue.value === issueKey);
-			return issue.name.trim();
-		})
-		.join(', ')
-		.trim();
+			const { action } = await inquirer.prompt([
+				{
+					type: 'list',
+					name: 'action',
+					message: 'What would you like to do?',
+					choices: [
+						{ name: 'Start new timer', value: 'start' },
+						{ name: 'Update running timer notes', value: 'update' },
+						{ name: 'Stop running timer', value: 'stop' },
+					],
+				},
+			]);
 
-	return new Promise((resolve, reject) => {
-		exec(`hrvst start ${HRVST_PROJECT_ALIAS} --notes "${notes}"`, (error, stdout, stderr) => {
-			if (error) {
-				reject(new Error(`Error executing hrvst CLI: ${error.message}`));
-				return;
-			}
-			if (stderr) {
-				reject(new Error(stderr));
-				return;
-			}
-			console.log(`Notes successfully added: ${stdout}`);
-			resolve();
-		});
-	});
-}
-
-/**
- * Stops the currently running Harvest timer
- * @async
- * @returns {Promise<void>}
- */
-async function stopHarvestTimer() {
-	return new Promise((resolve, reject) => {
-		exec('hrvst stop', (error, stdout, stderr) => {
-			if (error) {
-				reject(new Error(`Error stopping Harvest timer: ${error.message}`));
-				return;
-			}
-			if (stderr) {
-				reject(new Error(stderr));
-				return;
-			}
-			console.log('Timer stopped successfully');
-			resolve();
-		});
-	});
-}
-
-/**
- * Fetches notes from the currently running Harvest timer
- * @async
- * @returns {Promise<{id: string, notes: string}>}
- */
-async function getHarvestTimerNotes() {
-	return new Promise((resolve, reject) => {
-		// First, get the running entry ID
-		exec(
-			'hrvst time-entries list --is_running=true --output=json',
-			async (error, stdout, stderr) => {
-				if (error) {
-					reject(new Error(`Error getting running timer: ${error.message}`));
-					return;
-				}
-				if (stderr) {
-					reject(new Error(stderr));
-					return;
-				}
-
-				try {
-					const entries = JSON.parse(stdout);
-					if (!entries || !entries.length) {
-						reject(new Error('Error getting entries'));
-						return;
-					}
-
-					const runningEntry = entries[0];
-					const entryId = runningEntry.id;
-
-					// Then, get the detailed entry info
-					exec(
-						`hrvst time-entries get --time_entry_id=${entryId} --output=json`,
-						(detailError, detailStdout, detailStderr) => {
-							if (detailError) {
-								reject(new Error(`Error getting timer details: ${detailError.message}`));
-								return;
-							}
-							if (detailStderr) {
-								reject(new Error(detailStderr));
-								return;
-							}
-
-							try {
-								const entryDetails = JSON.parse(detailStdout);
-								resolve({ id: entryId, notes: entryDetails.notes || '' });
-							} catch (parseError) {
-								reject(new Error(`Error parsing timer details: ${parseError.message}`));
-							}
-						}
-					);
-				} catch (parseError) {
-					reject(new Error(`Error parsing running timer: ${parseError.message}`));
-				}
-			}
-		);
-	});
-}
-
-/**
- * Updates notes for the currently running Harvest timer
- * @async
- * @param {string} newNotes - New notes to append to the timer
- * @returns {Promise<void>}
- */
-async function updateHarvestTimerNotes(newNotes) {
-	try {
-		const { notes: existingNotes } = await getHarvestTimerNotes();
-
-		const combinedNotes = existingNotes
-			? `${existingNotes.trim()}\n${newNotes.trim()}`
-			: newNotes.trim();
-
-		return new Promise((resolve, reject) => {
-			exec(`hrvst note --notes "${combinedNotes}" --overwrite`, (error, stdout, stderr) => {
-				if (error) {
-					reject(new Error(`Error updating timer notes: ${error.message}`));
-					return;
-				}
-				if (stderr) {
-					reject(new Error(stderr));
-					return;
-				}
-				console.log('Timer notes updated successfully');
-				resolve();
-			});
-		});
-	} catch (error) {
-		throw new Error(`Failed to update timer notes: ${error.message}`);
-	}
-}
-/**
- * Main function to handle Jira and Harvest timer operations
- * @async
- * @returns {Promise<void>}
- */
-async function handleJiraToHarvestTimeEntry() {
-	try {
-		const issues = await fetchJiraIssues();
-
-		const actionAnswer = await inquirer.prompt([
-			{
-				type: 'list',
-				name: 'action',
-				message: 'What would you like to do?',
-				choices: [
-					{ name: 'Start new timer', value: 'start' },
-					{ name: 'Update running timer notes', value: 'update' },
-					{ name: 'Stop running timer', value: 'stop' },
-				],
-			},
-		]);
-
-		switch (actionAnswer.action) {
-			case 'start': {
-				const answers = await inquirer.prompt([
-					{
-						type: 'checkbox',
-						name: 'selectedIssues',
-						message: 'Select Jira issues:',
-						choices: issues,
-					},
-				]);
-				await createHarvestEntryWithNotes(issues, answers.selectedIssues);
-				console.log('Selected Jira issues:', answers.selectedIssues);
-				break;
-			}
-			case 'update': {
-				const answers = await inquirer.prompt([
-					{
-						type: 'checkbox',
-						name: 'selectedIssues',
-						message: 'Select Jira issues for updated notes:',
-						choices: issues,
-					},
-				]);
-
-				// Format each issue on the same line without extra spaces
-				const selectedIssue = answers.selectedIssues[0];
-				const issue = issues.find((issue) => issue.value === selectedIssue);
-				const notes = issue.name.trim();
-
-				await updateHarvestTimerNotes(notes);
-				break;
-			}
-			case 'stop': {
-				await stopHarvestTimer();
-				break;
-			}
+			const command = this.commands[action];
+			await command.execute(issues);
+		} catch (error) {
+			Logger.error('Operation failed', error);
+			process.exit(1);
 		}
-	} catch (error) {
-		console.error('Error:', error.message);
-		process.exit(1);
 	}
 }
 
-handleJiraToHarvestTimeEntry();
+const timeTracker = new TimeTracker();
+timeTracker.run();
