@@ -105,30 +105,59 @@ async function stopHarvestTimer() {
 /**
  * Fetches notes from the currently running Harvest timer
  * @async
- * @returns {Promise<string>}
+ * @returns {Promise<{id: string, notes: string}>}
  */
 async function getHarvestTimerNotes() {
 	return new Promise((resolve, reject) => {
-		exec('hrvst status', (error, stdout, stderr) => {
-			if (error) {
-				reject(new Error(`Error getting timer notes: ${error.message}`));
-				return;
-			}
-			if (stderr) {
-				reject(new Error(stderr));
-				return;
-			}
+		// First, get the running entry ID
+		exec(
+			'hrvst time-entries list --is_running=true --output=json',
+			async (error, stdout, stderr) => {
+				if (error) {
+					reject(new Error(`Error getting running timer: ${error.message}`));
+					return;
+				}
+				if (stderr) {
+					reject(new Error(stderr));
+					return;
+				}
 
-			// If no timer is running, return empty string
-			if (stdout.includes('No timer running')) {
-				resolve('');
-				return;
-			}
+				try {
+					const entries = JSON.parse(stdout);
+					if (!entries || !entries.length) {
+						reject(new Error('Error getting entries'));
+						return;
+					}
 
-			// Extract notes from the status output
-			const notesMatch = stdout.match(/Notes:\s*(.*?)(?:\n|$)/);
-			resolve(notesMatch ? notesMatch[1].trim() : '');
-		});
+					const runningEntry = entries[0];
+					const entryId = runningEntry.id;
+
+					// Then, get the detailed entry info
+					exec(
+						`hrvst time-entries get --time_entry_id=${entryId} --output=json`,
+						(detailError, detailStdout, detailStderr) => {
+							if (detailError) {
+								reject(new Error(`Error getting timer details: ${detailError.message}`));
+								return;
+							}
+							if (detailStderr) {
+								reject(new Error(detailStderr));
+								return;
+							}
+
+							try {
+								const entryDetails = JSON.parse(detailStdout);
+								resolve({ id: entryId, notes: entryDetails.notes || '' });
+							} catch (parseError) {
+								reject(new Error(`Error parsing timer details: ${parseError.message}`));
+							}
+						}
+					);
+				} catch (parseError) {
+					reject(new Error(`Error parsing running timer: ${parseError.message}`));
+				}
+			}
+		);
 	});
 }
 
@@ -139,22 +168,31 @@ async function getHarvestTimerNotes() {
  * @returns {Promise<void>}
  */
 async function updateHarvestTimerNotes(newNotes) {
-	return new Promise((resolve, reject) => {
-		exec(`hrvst note -n "${newNotes}"`, (error, stdout, stderr) => {
-			if (error) {
-				reject(new Error(`Error updating timer notes: ${error.message}`));
-				return;
-			}
-			if (stderr) {
-				reject(new Error(stderr));
-				return;
-			}
-			console.log('Timer notes updated successfully');
-			resolve();
-		});
-	});
-}
+	try {
+		const { notes: existingNotes } = await getHarvestTimerNotes();
 
+		const combinedNotes = existingNotes
+			? `${existingNotes.trim()}\n${newNotes.trim()}`
+			: newNotes.trim();
+
+		return new Promise((resolve, reject) => {
+			exec(`hrvst note --notes "${combinedNotes}" --overwrite`, (error, stdout, stderr) => {
+				if (error) {
+					reject(new Error(`Error updating timer notes: ${error.message}`));
+					return;
+				}
+				if (stderr) {
+					reject(new Error(stderr));
+					return;
+				}
+				console.log('Timer notes updated successfully');
+				resolve();
+			});
+		});
+	} catch (error) {
+		throw new Error(`Failed to update timer notes: ${error.message}`);
+	}
+}
 /**
  * Main function to handle Jira and Harvest timer operations
  * @async
