@@ -1,11 +1,22 @@
 import inquirer from 'inquirer';
 import { Logger } from '../utils/logger.js';
 
+/**
+ * Command to start a new timer with selected Jira issues
+ */
 export class StartTimerCommand {
+	/**
+	 * @param {import('../services/harvest.service.js').HarvestService} harvestService - The Harvest service instance
+	 */
 	constructor(harvestService) {
 		this.harvestService = harvestService;
 	}
 
+	/**
+	 * Execute the start timer command
+	 * @param {Array<{name: string, value: string}>} issues - List of available Jira issues
+	 * @returns {Promise<void>}
+	 */
 	async execute(issues) {
 		const { selectedIssues } = await inquirer.prompt([
 			{
@@ -27,11 +38,23 @@ export class StartTimerCommand {
 	}
 }
 
+/**
+ * Command to update notes on the currently running timer
+ */
 export class UpdateTimerCommand {
+	/**
+	 * @param {import('../services/harvest.service.js').HarvestService} harvestService - The Harvest service instance
+	 */
 	constructor(harvestService) {
 		this.harvestService = harvestService;
 	}
 
+	/**
+	 * Execute the update timer command
+	 * @param {Array<{name: string, value: string}>} issues - List of available Jira issues
+	 * @returns {Promise<void>}
+	 * @throws {Error} When no issue is selected or issue is not found
+	 */
 	async execute(issues) {
 		const { selectedIssues } = await inquirer.prompt([
 			{
@@ -55,11 +78,21 @@ export class UpdateTimerCommand {
 	}
 }
 
+/**
+ * Command to stop the currently running timer
+ */
 export class StopTimerCommand {
+	/**
+	 * @param {import('../services/harvest.service.js').HarvestService} harvestService - The Harvest service instance
+	 */
 	constructor(harvestService) {
 		this.harvestService = harvestService;
 	}
 
+	/**
+	 * Execute the stop timer command
+	 * @returns {Promise<void>}
+	 */
 	async execute() {
 		await this.harvestService.stopTimer();
 		Logger.success('Timer stopped successfully');

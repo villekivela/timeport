@@ -4,12 +4,19 @@ import { HarvestService } from './services/harvest.service.js';
 import { StartTimerCommand, UpdateTimerCommand, StopTimerCommand } from './commands/index.js';
 import { Logger } from './utils/logger.js';
 
+/**
+ * Main application class that handles time tracking operations
+ */
 class TimeTracker {
+	/**
+	 * Initialize TimeTracker with services and commands
+	 */
 	constructor() {
 		const jiraService = new JiraService();
 		const harvestService = new HarvestService();
 
 		this.jiraService = jiraService;
+		/** @type {Object.<string, import('./commands/index.js').StartTimerCommand | import('./commands/index.js').UpdateTimerCommand | import('./commands/index.js').StopTimerCommand>} */
 		this.commands = {
 			start: new StartTimerCommand(harvestService),
 			update: new UpdateTimerCommand(harvestService),
@@ -17,6 +24,11 @@ class TimeTracker {
 		};
 	}
 
+	/**
+	 * Run the time tracker application
+	 * Fetches Jira issues and handles user commands
+	 * @returns {Promise<void>}
+	 */
 	async run() {
 		try {
 			const issues = await this.jiraService.fetchUserIssues();
