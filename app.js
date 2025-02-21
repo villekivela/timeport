@@ -52,11 +52,11 @@ async function fetchJiraIssues() {
  * Creates a Harvest time entry with notes from selected Jira issues
  * @async
  * @param {Array<{name: string, value: string}>} issues - All available Jira issues
- * @param {Array<string>} selectedIssues - Array of selected issue keys
+ * @param {Array<string>} selectedIssueKeys - Array of selected issue keys
  * @returns {Promise<void>}
  */
-async function createHarvestEntryWithNotes(issues, selectedIssues) {
-	const notes = selectedIssues
+async function createHarvestEntryWithNotes(issues, selectedIssueKeys) {
+	const notes = selectedIssueKeys
 		.map((issueKey) => {
 			const issue = issues.find((issue) => issue.value === issueKey);
 			return issue.name;
