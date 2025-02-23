@@ -12,6 +12,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.4.1",
   "dependencies": {
+    "chalk": "^5.4.1",
     "dotenv": "^16.4.7",
     "inquirer": "^12.4.2",
     "node-fetch": "^3.3.2"

@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import { exec as execCallback } from 'child_process';
 import { config } from '../config.js';
+import { Logger } from '../utils/logger.js';
 
 const exec = promisify(execCallback);
 
@@ -20,7 +21,9 @@ export class HarvestService {
 			? `hrvst start ${config.harvest.projectAlias} --notes "${notes}"`
 			: `hrvst start ${config.harvest.projectAlias}`;
 		const { stdout } = await exec(command);
-		console.log(`Timer started successfully${notes ? ` with notes:\n${stdout}` : ''}`);
+		if (notes) {
+			console.log(stdout);
+		}
 	}
 
 	/**
@@ -38,7 +41,6 @@ export class HarvestService {
 			await exec(`hrvst note --notes "${combinedNotes}" --overwrite`);
 		}
 		await exec('hrvst stop');
-		console.log('Timer stopped successfully');
 	}
 
 	/**
@@ -78,6 +80,5 @@ export class HarvestService {
 			: newNotes.trim();
 
 		await exec(`hrvst note --notes "${combinedNotes}" --overwrite`);
-		console.log('Timer notes updated successfully');
 	}
 }

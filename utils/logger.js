@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 /**
  * Utility class for consistent logging throughout the application
  */
@@ -8,7 +10,10 @@ export class Logger {
 	 * @param {Error} [error] - Optional Error object with additional details
 	 */
 	static error(message, error) {
-		console.error(`[ERROR] ${message}`, error?.message || '');
+		console.error(chalk.red('✖ ') + chalk.redBright(message));
+		if (error) {
+			console.error(chalk.red('  Details:'), chalk.dim(error.message));
+		}
 	}
 
 	/**
@@ -16,7 +21,7 @@ export class Logger {
 	 * @param {string} message - The message to log
 	 */
 	static info(message) {
-		console.log(`[INFO] ${message}`);
+		console.log(chalk.blue('ℹ ') + chalk.blueBright(message));
 	}
 
 	/**
@@ -24,6 +29,10 @@ export class Logger {
 	 * @param {string} message - The success message to log
 	 */
 	static success(message) {
-		console.log(`[SUCCESS] ${message}`);
+		console.log(chalk.green('✓ ') + chalk.greenBright(message));
+	}
+
+	static warn(message) {
+		console.log(chalk.yellow('⚠ ') + chalk.yellowBright(message));
 	}
 }
