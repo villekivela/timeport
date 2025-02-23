@@ -91,10 +91,40 @@ export class StopTimerCommand {
 
 	/**
 	 * Execute the stop timer command
+	 * @param {Array<{name: string, value: string}>} issues - List of available Jira issues
 	 * @returns {Promise<void>}
 	 */
-	async execute() {
-		await this.harvestService.stopTimer();
+	async execute(issues) {
+		const { addNotes } = await inquirer.prompt([
+			{
+				type: 'confirm',
+				name: 'addNotes',
+				message: 'Would you like to add final Jira issues before stopping?',
+				default: false,
+			},
+		]);
+
+		if (addNotes) {
+			const { selectedIssues } = await inquirer.prompt([
+				{
+					type: 'checkbox',
+					name: 'selectedIssues',
+					message: 'Select Jira issues for final notes:',
+					choices: issues,
+					validate: (input) => (input.length > 0 ? true : 'Please select at least one issue'),
+				},
+			]);
+
+			const notes = selectedIssues
+				.map((issueKey) => issues.find((issue) => issue.value === issueKey)?.name.trim())
+				.filter(Boolean)
+				.join(', ');
+
+			await this.harvestService.stopTimer(notes);
+		} else {
+			await this.harvestService.stopTimer();
+		}
+
 		Logger.success('Timer stopped successfully');
 	}
 }

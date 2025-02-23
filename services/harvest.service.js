@@ -17,15 +17,23 @@ export class HarvestService {
 	 */
 	async startTimer(notes) {
 		const { stdout } = await exec(`hrvst start ${config.harvest.projectAlias} --notes "${notes}"`);
-		console.log(`Notes successfully added: ${stdout}`);
+		console.log(`Timer started successfully with notes:\n${stdout}`);
 	}
 
 	/**
 	 * Stop the currently running timer
+	 * @param {string} notes - Notes to attach to the timer when stopping
 	 * @returns {Promise<void>}
 	 * @throws {Error} When the hrvst CLI command fails
 	 */
-	async stopTimer() {
+	async stopTimer(notes) {
+		if (notes) {
+			const { notes: existingNotes } = await this.getRunningTimer();
+			const combinedNotes = existingNotes
+				? `${existingNotes.trim()}\n${notes.trim()}`
+				: notes.trim();
+			await exec(`hrvst note --notes "${combinedNotes}" --overwrite`);
+		}
 		await exec('hrvst stop');
 		console.log('Timer stopped successfully');
 	}
