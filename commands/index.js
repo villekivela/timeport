@@ -18,22 +18,36 @@ export class StartTimerCommand {
 	 * @returns {Promise<void>}
 	 */
 	async execute(issues) {
-		const { selectedIssues } = await inquirer.prompt([
+		const { addNotes } = await inquirer.prompt([
 			{
-				type: 'checkbox',
-				name: 'selectedIssues',
-				message: 'Select Jira issues:',
-				choices: issues,
-				validate: (input) => (input.length > 0 ? true : 'Please select at least one issue'),
+				type: 'confirm',
+				name: 'addNotes',
+				message: 'Would you like to add Jira issues to the timer?',
+				default: true,
 			},
 		]);
 
-		const notes = selectedIssues
-			.map((issueKey) => issues.find((issue) => issue.value === issueKey)?.name.trim())
-			.filter(Boolean)
-			.join(', ');
+		if (addNotes) {
+			const { selectedIssues } = await inquirer.prompt([
+				{
+					type: 'checkbox',
+					name: 'selectedIssues',
+					message: 'Select Jira issues:',
+					choices: issues,
+					validate: (input) => (input.length > 0 ? true : 'Please select at least one issue'),
+				},
+			]);
 
-		await this.harvestService.startTimer(notes);
+			const notes = selectedIssues
+				.map((issueKey) => issues.find((issue) => issue.value === issueKey)?.name.trim())
+				.filter(Boolean)
+				.join(', ');
+
+			await this.harvestService.startTimer(notes);
+		} else {
+			await this.harvestService.startTimer('');
+		}
+
 		Logger.success('Timer started successfully');
 	}
 }

@@ -16,8 +16,11 @@ export class HarvestService {
 	 * @throws {Error} When the hrvst CLI command fails
 	 */
 	async startTimer(notes) {
-		const { stdout } = await exec(`hrvst start ${config.harvest.projectAlias} --notes "${notes}"`);
-		console.log(`Timer started successfully with notes:\n${stdout}`);
+		const command = notes
+			? `hrvst start ${config.harvest.projectAlias} --notes "${notes}"`
+			: `hrvst start ${config.harvest.projectAlias}`;
+		const { stdout } = await exec(command);
+		console.log(`Timer started successfully${notes ? ` with notes:\n${stdout}` : ''}`);
 	}
 
 	/**
