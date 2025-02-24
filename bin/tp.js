@@ -3,6 +3,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { program } from 'commander';
 import { TimeTracker } from '../timeport.js';
+import { execSync } from 'child_process';
 
 const DIRNAME = dirname(fileURLToPath(import.meta.url));
 process.env.NODE_CONFIG_DIR = join(DIRNAME, '..', 'config');
@@ -54,6 +55,20 @@ program
 			await timeTracker.executeCommand('stop');
 		} catch (error) {
 			console.error('Error stopping timer:', error.message);
+			process.exit(1);
+		}
+	});
+
+program
+	.command('upgrade')
+	.description('Upgrade TimePort to the latest version')
+	.action(() => {
+		try {
+			console.log('Upgrading TimePort...');
+			execSync('pnpm add -g github:villekivela/timeport@latest', { stdio: 'inherit' });
+			console.log('TimePort upgraded successfully!');
+		} catch (error) {
+			console.error('Error upgrading TimePort:', error.message);
 			process.exit(1);
 		}
 	});

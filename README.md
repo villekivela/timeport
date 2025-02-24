@@ -29,17 +29,10 @@ HRVST_PROJECT_ALIAS=your_harvest_project_alias
 
 ## Updating
 
-To update TimePort to the latest version:
+To upgrade TimePort to the latest version, simply run:
 
 ```bash
-pnpm update -g github:villekivela/timeport
-```
-
-Or if you need to reinstall:
-
-```bash
-pnpm uninstall -g timeport
-pnpm add -g github:villekivela/timeport
+tp upgrade
 ```
 
 ## Usage

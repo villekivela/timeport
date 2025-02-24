@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Check version consistency
+        run: |
+          # Get version from tag
+          TAG_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+
+          # Get version from package.json
+          PKG_VERSION=$(node -p "require('./package.json').version")
+
+          # Get version from bin/tp.js
+          TP_VERSION=$(grep -o "\.version('[^']*')" bin/tp.js | cut -d"'" -f2)
+
+          # Check if versions match
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Version mismatch: Tag version ($TAG_VERSION) doesn't match package.json version ($PKG_VERSION)"
+            exit 1
+          fi
+
+          if [ "$TAG_VERSION" != "$TP_VERSION" ]; then
+            echo "Version mismatch: Tag version ($TAG_VERSION) doesn't match bin/tp.js version ($TP_VERSION)"
+            exit 1
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: TimePort ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
