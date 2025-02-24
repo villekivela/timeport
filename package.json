@@ -1,6 +1,6 @@
 {
   "name": "timeport",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A CLI tool to bridge time tracking between Jira and Harvest",
   "bin": {
     "tp": "./bin/tp.js"
