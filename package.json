@@ -1,6 +1,6 @@
 {
   "name": "timeport",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A CLI tool to bridge time tracking between Jira and Harvest",
   "bin": {
     "tp": "./bin/tp.js"
@@ -14,7 +14,8 @@
     "start": "node timeport.js",
     "start:timer": "node bin/tp.js start",
     "update:timer": "node bin/tp.js update",
-    "stop:timer": "node bin/tp.js stop"
+    "stop:timer": "node bin/tp.js stop",
+    "bump": "node scripts/bump-version.js"
   },
   "keywords": [],
   "author": "",

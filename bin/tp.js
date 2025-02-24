@@ -13,7 +13,7 @@ const timeTracker = new TimeTracker();
 program
 	.name('tp')
 	.description('TimePort - Bridge between Jira and Harvest time tracking')
-	.version('1.0.5')
+	.version('1.0.6')
 	.action(async () => {
 		try {
 			await timeTracker.run();
