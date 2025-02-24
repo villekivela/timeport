@@ -65,7 +65,7 @@ program
 	.action(() => {
 		try {
 			console.log('Upgrading TimePort...');
-			execSync('pnpm add -g github:villekivela/timeport@latest', { stdio: 'inherit' });
+			execSync('pnpm add -g github:villekivela/timeport', { stdio: 'inherit' });
 			console.log('TimePort upgraded successfully!');
 		} catch (error) {
 			console.error('Error upgrading TimePort:', error.message);
