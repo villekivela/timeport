@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/villekivela/timeport.git"
+    "url": "https://github.com/villekivela/timeport.git"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

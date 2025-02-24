@@ -41,14 +41,12 @@ export class TimeTracker {
 	}
 
 	/**
-	 * Run the time tracker application
+	 * Run the time tracker application in interactive mode
 	 * Fetches Jira issues and handles user commands
 	 * @returns {Promise<void>}
 	 */
 	async run() {
 		try {
-			const issues = await this.jiraService.fetchUserIssues();
-
 			const { action } = await inquirer.prompt([
 				{
 					type: 'list',
@@ -62,14 +60,10 @@ export class TimeTracker {
 				},
 			]);
 
-			const command = this.commands[action];
-			await command.execute(issues);
+			await this.executeCommand(action);
 		} catch (error) {
 			Logger.error('Operation failed', error);
 			process.exit(1);
 		}
 	}
 }
-
-const timeport = new TimeTracker();
-timeport.run();

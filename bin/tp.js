@@ -4,15 +4,23 @@ import { fileURLToPath } from 'url';
 import { program } from 'commander';
 import { TimeTracker } from '../timeport.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-process.env.NODE_CONFIG_DIR = join(__dirname, '..', 'config');
+const DIRNAME = dirname(fileURLToPath(import.meta.url));
+process.env.NODE_CONFIG_DIR = join(DIRNAME, '..', 'config');
 
 const timeTracker = new TimeTracker();
 
 program
 	.name('tp')
 	.description('TimePort - Bridge between Jira and Harvest time tracking')
-	.version('1.0.0');
+	.version('1.0.0')
+	.action(async () => {
+		try {
+			await timeTracker.run();
+		} catch (error) {
+			console.error('Error in interactive mode:', error.message);
+			process.exit(1);
+		}
+	});
 
 program
 	.command('start')
