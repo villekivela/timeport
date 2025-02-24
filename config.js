@@ -1,6 +1,16 @@
 import dotenv from 'dotenv';
+import os from 'os';
+import path from 'path';
+import fs from 'fs';
 
-dotenv.config();
+// Create config directory if it doesn't exist
+const configDir = path.join(os.homedir(), '.config', 'timeport');
+if (!fs.existsSync(configDir)) {
+	fs.mkdirSync(configDir, { recursive: true });
+}
+
+// Load .env from ~/.config/timeport/.env
+dotenv.config({ path: path.join(configDir, '.env') });
 
 export const config = {
 	jira: {

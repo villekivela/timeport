@@ -7,7 +7,7 @@ import { Logger } from './utils/logger.js';
 /**
  * Main application class that handles time tracking operations
  */
-class TimeTracker {
+export class TimeTracker {
 	/**
 	 * Initialize TimeTracker with services and commands
 	 */
@@ -22,6 +22,22 @@ class TimeTracker {
 			update: new UpdateTimerCommand(harvestService),
 			stop: new StopTimerCommand(harvestService),
 		};
+	}
+
+	/**
+	 * Execute a specific command
+	 * @param {string} commandName - The name of the command to execute
+	 * @returns {Promise<void>}
+	 */
+	async executeCommand(commandName) {
+		try {
+			const issues = await this.jiraService.fetchUserIssues();
+			const command = this.commands[commandName];
+			await command.execute(issues);
+		} catch (error) {
+			Logger.error('Operation failed', error);
+			throw error;
+		}
 	}
 
 	/**
@@ -55,5 +71,5 @@ class TimeTracker {
 	}
 }
 
-const timeTracker = new TimeTracker();
-timeTracker.run();
+const timeport = new TimeTracker();
+timeport.run();

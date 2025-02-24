@@ -10,7 +10,7 @@ export class Logger {
 	 * @param {Error} [error] - Optional Error object with additional details
 	 */
 	static error(message, error) {
-		console.error(chalk.red('✖ ') + chalk.redBright(message));
+		console.error(chalk.red('TimePort ✖ ') + chalk.redBright(message));
 		if (error) {
 			console.error(chalk.red('  Details:'), chalk.dim(error.message));
 		}
@@ -21,7 +21,7 @@ export class Logger {
 	 * @param {string} message - The message to log
 	 */
 	static info(message) {
-		console.log(chalk.blue('ℹ ') + chalk.blueBright(message));
+		console.log(chalk.blue('TimePort ℹ ') + chalk.blueBright(message));
 	}
 
 	/**
@@ -29,10 +29,10 @@ export class Logger {
 	 * @param {string} message - The success message to log
 	 */
 	static success(message) {
-		console.log(chalk.green('✓ ') + chalk.greenBright(message));
+		console.log(chalk.green('TimePort ✓ ') + chalk.greenBright(message));
 	}
 
 	static warn(message) {
-		console.log(chalk.yellow('⚠ ') + chalk.yellowBright(message));
+		console.log(chalk.yellow('TimePort ⚠ ') + chalk.yellowBright(message));
 	}
 }
