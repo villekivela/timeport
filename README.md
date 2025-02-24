@@ -27,33 +27,54 @@ JIRA_BASE_URL=https://your-company.atlassian.net
 HRVST_PROJECT_ALIAS=your_harvest_project_alias
 ```
 
-After installation, you can use the `tp` command from anywhere to:
+## Updating
+
+To update TimePort to the latest version:
+
+```bash
+pnpm update -g github:villekivela/timeport
+```
+
+Or if you need to reinstall:
+
+```bash
+pnpm uninstall -g timeport
+pnpm add -g github:villekivela/timeport
+```
+
+## Usage
+
+### Interactive Mode
+
+Simply run `tp` without any arguments to enter interactive mode, where you can:
 
 - Start a timer with Jira issues
 - Update timer notes
 - Stop timer with optional final notes
 
-## Usage
+### Direct Commands
 
-### Start a Timer
+You can also use direct commands:
 
-To start a timer with Jira issues, run:
+#### Start a Timer
+
+To start a timer with Jira issues:
 
 ```bash
 tp start
 ```
 
-### Update a Timer with Notes
+#### Update a Timer with Notes
 
-To update the timer notes, run:
+To update the timer notes:
 
 ```bash
 tp update
 ```
 
-### Stop a Timer
+#### Stop a Timer
 
-To stop the timer and optionally add final notes, run:
+To stop the timer and optionally add final notes:
 
 ```bash
 tp stop
