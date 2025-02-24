@@ -13,7 +13,7 @@ const timeTracker = new TimeTracker();
 program
 	.name('tp')
 	.description('TimePort - Bridge between Jira and Harvest time tracking')
-	.version('1.0.3')
+	.version('1.0.4')
 	.action(async () => {
 		try {
 			await timeTracker.run();
@@ -65,7 +65,7 @@ program
 	.action(() => {
 		try {
 			console.log('Upgrading TimePort...');
-			execSync('pnpm add -g github:villekivela/timeport', { stdio: 'inherit' });
+			execSync('pnpm add -g https://github.com/villekivela/timeport', { stdio: 'inherit' });
 			console.log('TimePort upgraded successfully!');
 		} catch (error) {
 			console.error('Error upgrading TimePort:', error.message);

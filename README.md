@@ -15,7 +15,7 @@ TimePort is a CLI tool that bridges time tracking between Jira and Harvest, maki
 You can install TimePort directly from GitHub:
 
 ```bash
-pnpm add -g github:villekivela/timeport
+pnpm add -g https://github.com/villekivela/timeport
 ```
 
 Then create a `.env` file in your config directory (`~/.config/timeport/.env`) with your credentials:
