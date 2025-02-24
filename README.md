@@ -20,7 +20,7 @@ pnpm add -g github:villekivela/timeport
 
 Then create a `.env` file in your config directory (`~/.config/timeport/.env`) with your credentials:
 
-```
+```text
 JIRA_USERNAME=your.email@company.com
 JIRA_API_TOKEN=your_jira_api_token
 JIRA_BASE_URL=https://your-company.atlassian.net
