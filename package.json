@@ -6,7 +6,10 @@
     "tp": "./dist/bin/tp.js"
   },
   "type": "module",
-  "main": "dist/timeport.js",
+  "main": "dist/app.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -18,7 +21,7 @@
     "update:timer": "node dist/bin/tp.js update",
     "stop:timer": "node dist/bin/tp.js stop",
     "bump": "node scripts/bump-version.js",
-    "prestart": "npm run build",
+    "prepack": "npm run build",
     "fix:prettier": "prettier --write \"src/**/*.ts\"",
     "format": "npm run fix:prettier && npm run lint"
   },
