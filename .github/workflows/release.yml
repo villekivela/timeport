@@ -6,7 +6,7 @@ on:
       - 'v*' # Trigger on version tags
 
 permissions:
-  contents: write # Add this line to grant write permissions
+  contents: write
 
 jobs:
   release:
@@ -25,6 +25,12 @@ jobs:
         with:
           version: latest
 
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build TypeScript
+        run: pnpm run build
+
       - name: Check version consistency
         run: |
           # Get version from tag
@@ -33,8 +39,8 @@ jobs:
           # Get version from package.json
           PKG_VERSION=$(node -p "require('./package.json').version")
 
-          # Get version from bin/tp.js
-          TP_VERSION=$(grep -o "\.version('[^']*')" bin/tp.js | cut -d"'" -f2)
+          # Get version from src/bin/tp.ts
+          TP_VERSION=$(grep -o "\.version('[^']*')" src/bin/tp.ts | cut -d"'" -f2)
 
           # Check if versions match
           if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
@@ -43,7 +49,7 @@ jobs:
           fi
 
           if [ "$TAG_VERSION" != "$TP_VERSION" ]; then
-            echo "Version mismatch: Tag version ($TAG_VERSION) doesn't match bin/tp.js version ($TP_VERSION)"
+            echo "Version mismatch: Tag version ($TAG_VERSION) doesn't match src/bin/tp.ts version ($TP_VERSION)"
             exit 1
           fi
 
