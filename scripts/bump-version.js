@@ -5,26 +5,39 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT_DIR = path.resolve(__dirname, '../../');
+const ROOT_DIR = path.resolve(__dirname, '..');
 
-async function updateVersion(newVersion: string): Promise<void> {
+async function updateVersion(newVersion) {
 	try {
 		// Update package.json
 		const packagePath = path.join(ROOT_DIR, 'package.json');
+		console.log('Reading package.json from:', packagePath);
 		const packageJson = JSON.parse(await fs.readFile(packagePath, 'utf8'));
+		console.log('Current version:', packageJson.version);
 		packageJson.version = newVersion;
 		await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
+		console.log('Updated package.json version to:', newVersion);
 
 		// Update bin/tp.ts
 		const tpPath = path.join(ROOT_DIR, 'src', 'bin', 'tp.ts');
+		console.log('Reading tp.ts from:', tpPath);
 		let tpContent = await fs.readFile(tpPath, 'utf8');
-		tpContent = tpContent.replace(/\.version\(['"](.*?)['"]\)/, `.version('${newVersion}')`);
-		await fs.writeFile(tpPath, tpContent);
+		const oldContent = tpContent;
+		tpContent = tpContent.replace(/\.version\(['"].*?['"]\)/, `.version('${newVersion}')`);
+
+		if (oldContent === tpContent) {
+			console.log('Warning: No version string found in tp.ts');
+		} else {
+			await fs.writeFile(tpPath, tpContent);
+			console.log('Updated tp.ts version to:', newVersion);
+		}
 
 		// Build TypeScript
+		console.log('Building TypeScript...');
 		execSync('pnpm run build', { stdio: 'inherit' });
 
 		// Git commands
+		console.log('Committing changes...');
 		execSync('git add package.json src/bin/tp.ts', { stdio: 'inherit' });
 		execSync(`git commit -m "Bump version to ${newVersion}"`, { stdio: 'inherit' });
 		execSync(`git tag -a v${newVersion} -m "Version ${newVersion}"`, { stdio: 'inherit' });

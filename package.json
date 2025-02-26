@@ -17,7 +17,7 @@
 		"start:timer": "node dist/bin/tp.js start",
 		"update:timer": "node dist/bin/tp.js update",
 		"stop:timer": "node dist/bin/tp.js stop",
-		"bump": "node dist/scripts/bump-version.js",
+		"bump": "node scripts/bump-version.js",
 		"prestart": "npm run build",
 		"fix:prettier": "prettier --write \"src/**/*.ts\"",
 		"format": "npm run fix:prettier && npm run lint"
