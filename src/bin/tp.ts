@@ -11,7 +11,7 @@ validateConfig();
 program
 	.name('tp')
 	.description('CLI tool to bridge time tracking between Jira and Harvest')
-	.version('1.0.9');
+	.version('1.0.10');
 
 program
 	.command('start')
