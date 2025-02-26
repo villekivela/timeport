@@ -3,20 +3,19 @@ import { JiraService } from './services/jira.service.js';
 import { HarvestService } from './services/harvest.service.js';
 import { StartTimerCommand, UpdateTimerCommand, StopTimerCommand } from './commands/index.js';
 import { Logger } from './utils/logger.js';
+import { Command } from './types/index.js';
 
-/**
- * Main application class that handles time tracking operations
- */
+type CommandName = 'start' | 'update' | 'stop';
+
 export class TimeTracker {
-	/**
-	 * Initialize TimeTracker with services and commands
-	 */
+	private jiraService: JiraService;
+	private commands: Record<CommandName, Command>;
+
 	constructor() {
 		const jiraService = new JiraService();
 		const harvestService = new HarvestService();
 
 		this.jiraService = jiraService;
-		/** @type {Object.<string, import('./commands/index.js').StartTimerCommand | import('./commands/index.js').UpdateTimerCommand | import('./commands/index.js').StopTimerCommand>} */
 		this.commands = {
 			start: new StartTimerCommand(harvestService),
 			update: new UpdateTimerCommand(harvestService),
@@ -24,30 +23,20 @@ export class TimeTracker {
 		};
 	}
 
-	/**
-	 * Execute a specific command
-	 * @param {string} commandName - The name of the command to execute
-	 * @returns {Promise<void>}
-	 */
-	async executeCommand(commandName) {
+	async executeCommand(commandName: CommandName): Promise<void> {
 		try {
 			const issues = await this.jiraService.fetchUserIssues();
 			const command = this.commands[commandName];
 			await command.execute(issues);
 		} catch (error) {
-			Logger.error('Operation failed', error);
+			Logger.error('Operation failed', error instanceof Error ? error : new Error(String(error)));
 			throw error;
 		}
 	}
 
-	/**
-	 * Run the time tracker application in interactive mode
-	 * Fetches Jira issues and handles user commands
-	 * @returns {Promise<void>}
-	 */
-	async run() {
+	async run(): Promise<void> {
 		try {
-			const { action } = await inquirer.prompt([
+			const { action } = await inquirer.prompt<{ action: CommandName }>([
 				{
 					type: 'list',
 					name: 'action',
@@ -62,7 +51,7 @@ export class TimeTracker {
 
 			await this.executeCommand(action);
 		} catch (error) {
-			Logger.error('Operation failed', error);
+			Logger.error('Operation failed', error instanceof Error ? error : new Error(String(error)));
 			process.exit(1);
 		}
 	}
