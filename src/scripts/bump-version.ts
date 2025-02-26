@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT_DIR = path.join(__dirname, '..');
+const ROOT_DIR = path.join(__dirname, '..', '..');
 
 async function updateVersion(newVersion: string): Promise<void> {
 	// Update package.json
@@ -15,14 +15,17 @@ async function updateVersion(newVersion: string): Promise<void> {
 	await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
 
 	// Update bin/tp.ts
-	const tpPath = path.join(ROOT_DIR, 'bin', 'tp.ts');
+	const tpPath = path.join(ROOT_DIR, 'src', 'bin', 'tp.ts');
 	let tpContent = await fs.readFile(tpPath, 'utf8');
 	tpContent = tpContent.replace(/\.version\(['"](.*?)['"]\)/, `.version('${newVersion}')`);
 	await fs.writeFile(tpPath, tpContent);
 
+	// Build TypeScript
+	execSync('pnpm run build', { stdio: 'inherit' });
+
 	// Git commands
 	try {
-		execSync('git add package.json bin/tp.ts', { stdio: 'inherit' });
+		execSync('git add package.json src/bin/tp.ts', { stdio: 'inherit' });
 		execSync(`git commit -m "Bump version to ${newVersion}"`, { stdio: 'inherit' });
 		execSync(`git tag -a v${newVersion} -m "Version ${newVersion}"`, { stdio: 'inherit' });
 		execSync('git push origin main --tags', { stdio: 'inherit' });
