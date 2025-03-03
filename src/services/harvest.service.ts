@@ -5,7 +5,7 @@ import { config } from '../config.js';
 const exec = promisify(execCallback);
 
 export class HarvestService {
-	async startTimer(notes: string): Promise<void> {
+	async startTimer(notes?: string): Promise<void> {
 		const startCommand = `hrvst start ${config.harvest.projectAlias}`;
 		const command = notes ? `${startCommand} --notes "${notes}"` : startCommand;
 
