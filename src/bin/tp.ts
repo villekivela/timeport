@@ -38,8 +38,25 @@ program
 		}
 	});
 
+program
+	.command('uninstall')
+	.description('Uninstall TimePort')
+	.action(() => {
+		try {
+			Logger.info('Uninstalling TimePort...');
+			execSync('pnpm remove -g timeport', { stdio: 'inherit' });
+			Logger.success('TimePort uninstalled successfully');
+		} catch (error) {
+			Logger.error(
+				'Failed to uninstall TimePort',
+				error instanceof Error ? error : new Error(String(error))
+			);
+			process.exit(1);
+		}
+	});
+
 // Only validate config for commands that need it
-if (!process.argv.includes('upgrade')) {
+if (!process.argv.includes('upgrade') && !process.argv.includes('uninstall')) {
 	validateConfig();
 }
 
