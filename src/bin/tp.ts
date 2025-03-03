@@ -14,12 +14,12 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'
 
 const program = new Command();
 
-validateConfig();
-
 program
 	.name('tp')
-	.description('CLI tool to bridge time tracking between Jira and Harvest')
+	.description('TimePort - Bridge between Jira and Harvest time tracking')
 	.version(packageJson.version);
+
+validateConfig();
 
 program
 	.command('start')
