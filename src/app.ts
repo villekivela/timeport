@@ -1,9 +1,9 @@
 import inquirer from 'inquirer';
-import { JiraService } from './services/jira.service.js';
+import { StartTimerCommand, StopTimerCommand, UpdateTimerCommand } from './commands/index.js';
 import { HarvestService } from './services/harvest.service.js';
-import { StartTimerCommand, UpdateTimerCommand, StopTimerCommand } from './commands/index.js';
-import { Logger } from './utils/logger.js';
+import { JiraService } from './services/jira.service.js';
 import { Command } from './types/index.js';
+import { Logger } from './utils/logger.js';
 
 type CommandName = 'start' | 'update' | 'stop';
 

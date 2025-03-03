@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
 import { execSync } from 'child_process';
+import { Command } from 'commander';
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { App } from '../app.js';
 import { validateConfig } from '../config.js';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 import { Logger } from '../utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,7 +14,7 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'
 
 const program = new Command();
 
-program.version('1.2.0'); // VERSION STRING
+program.version('1.2.0'); // INFO: VERSION STRING
 
 program
 	.name('tp')
@@ -55,7 +55,7 @@ program
 		}
 	});
 
-// Timer commands (need config)
+// INFO: Timer commands (need config)
 const timerCommands = ['start', 'stop', 'update'];
 if (
 	(process.argv.length > 2 && timerCommands.includes(process.argv[2])) ||
@@ -88,7 +88,7 @@ program
 		await app.executeCommand('stop');
 	});
 
-// Default command (interactive mode)
+// INFO: Default command (interactive mode)
 if (process.argv.length === 2) {
 	const app = new App();
 	app.run().catch(() => process.exit(1));

@@ -1,5 +1,5 @@
-import { promisify } from 'util';
 import { exec as execCallback } from 'child_process';
+import { promisify } from 'util';
 import { config } from '../config.js';
 
 const exec = promisify(execCallback);

@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 import { homedir } from 'os';
-import { Config } from './types/index.js';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import yaml from 'yaml';
+import { Config } from './types/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_DIR =
