@@ -1,0 +1,13 @@
+# Jira Configuration
+jira:
+  # Your Jira email address
+  username: your.email@company.com
+  # Your Jira API token (generate from Atlassian account settings)
+  apiToken: your_jira_api_token
+  # Your Jira instance URL
+  baseUrl: https://your-company.atlassian.net
+
+# Harvest Configuration
+harvest:
+  # Your Harvest project alias (from hrvst CLI configuration)
+  projectAlias: your_harvest_project_alias

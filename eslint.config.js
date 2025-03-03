@@ -17,10 +17,8 @@ export default [
 				...globals.node,
 			},
 		},
-		env: { node: true },
 	},
 	{
-		env: { node: true },
 		files: ['**/*.ts'],
 		languageOptions: {
 			parser: tsParser,

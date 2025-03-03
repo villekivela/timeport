@@ -16,6 +16,7 @@
 		"test": "node --test dist/tests/",
 		"test:watch": "node --test --watch dist/tests/",
 		"lint": "eslint . --ext .ts --ignore-pattern 'dist/'",
+		"prestart": "pnpm run build",
 		"start": "node dist/main.js",
 		"start:timer": "node dist/bin/tp.js start",
 		"update:timer": "node dist/bin/tp.js update",
@@ -31,10 +32,10 @@
 	"packageManager": "pnpm@10.4.1",
 	"dependencies": {
 		"chalk": "^5.4.1",
-		"dotenv": "^16.4.7",
 		"inquirer": "^12.4.2",
 		"node-fetch": "^3.3.2",
-		"commander": "^11.1.0"
+		"commander": "^11.1.0",
+		"yaml": "^2.3.4"
 	},
 	"repository": {
 		"type": "git",

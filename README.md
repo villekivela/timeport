@@ -18,14 +18,25 @@ You can install TimePort directly from GitHub:
 pnpm add -g https://github.com/villekivela/timeport
 ```
 
-Then create a `.env` file in your config directory (`~/.config/timeport/.env`) with your credentials:
+Then create a `config.yaml` file in your config directory (`~/.config/timeport/config.yaml`):
 
-```text
-JIRA_USERNAME=your.email@company.com
-JIRA_API_TOKEN=your_jira_api_token
-JIRA_BASE_URL=https://your-company.atlassian.net
-HRVST_PROJECT_ALIAS=your_harvest_project_alias
+```yaml
+# Jira Configuration
+jira:
+  # Your Jira email address
+  username: your.email@company.com
+  # Your Jira API token (generate from Atlassian account settings)
+  apiToken: your_jira_api_token
+  # Your Jira instance URL
+  baseUrl: https://your-company.atlassian.net
+
+# Harvest Configuration
+harvest:
+  # Your Harvest project alias (from hrvst CLI configuration)
+  projectAlias: your_harvest_project_alias
 ```
+
+You can copy the sample configuration file from the repository's `config.sample.yaml` and modify it with your credentials.
 
 ## Updating
 
