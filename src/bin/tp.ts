@@ -55,8 +55,12 @@ program
 		}
 	});
 
-// Only validate config for commands that need it
-if (!process.argv.includes('upgrade') && !process.argv.includes('uninstall')) {
+// Timer commands (need config)
+const timerCommands = ['start', 'stop', 'update'];
+if (
+	(process.argv.length > 2 && timerCommands.includes(process.argv[2])) ||
+	process.argv.length === 2
+) {
 	validateConfig();
 }
 
