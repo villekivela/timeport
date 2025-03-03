@@ -40,7 +40,7 @@ jobs:
           PKG_VERSION=$(node -p "require('./package.json').version")
 
           # Get version from src/bin/tp.ts
-          TP_VERSION=$(grep -o "\.version('[^']*')" src/bin/tp.ts | cut -d"'" -f2)
+          TP_VERSION=$(grep -o "program\.version('[^']*')" src/bin/tp.ts | grep -o "'.*'" | tr -d "'")
 
           # Check if versions match
           if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then

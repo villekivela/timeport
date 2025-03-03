@@ -18,6 +18,16 @@ async function updateVersion(newVersion) {
 		await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
 		console.log('Updated package.json version to:', newVersion);
 
+		// Update src/bin/tp.ts
+		const tpPath = path.join(ROOT_DIR, 'src/bin/tp.ts');
+		let tpContent = await fs.readFile(tpPath, 'utf8');
+		tpContent = tpContent.replace(
+			/program\.version\('[^']*'\)/,
+			`program.version('${newVersion}')`
+		);
+		await fs.writeFile(tpPath, tpContent);
+		console.log('Updated tp.ts version to:', newVersion);
+
 		// Build TypeScript
 		console.log('Building TypeScript...');
 		execSync('pnpm run build', { stdio: 'inherit' });
@@ -45,7 +55,4 @@ if (!newVersion) {
 	process.exit(1);
 }
 
-updateVersion(newVersion).catch((error) => {
-	console.error('Error updating version:', error);
-	process.exit(1);
-});
+updateVersion(newVersion);
