@@ -16,12 +16,32 @@ const program = new Command();
 
 program.version('1.1.2'); // VERSION STRING
 
-validateConfig();
-
 program
 	.name('tp')
 	.description('TimePort - Bridge between Jira and Harvest time tracking')
 	.version(packageJson.version);
+
+program
+	.command('upgrade')
+	.description('Upgrade TimePort to the latest version')
+	.action(() => {
+		try {
+			Logger.info('Upgrading TimePort...');
+			execSync('pnpm add -g https://github.com/villekivela/timeport', { stdio: 'inherit' });
+			Logger.success('TimePort upgraded successfully');
+		} catch (error) {
+			Logger.error(
+				'Failed to upgrade TimePort',
+				error instanceof Error ? error : new Error(String(error))
+			);
+			process.exit(1);
+		}
+	});
+
+// Only validate config for commands that need it
+if (!process.argv.includes('upgrade')) {
+	validateConfig();
+}
 
 program
 	.command('start')
@@ -45,24 +65,6 @@ program
 	.action(async () => {
 		const app = new App();
 		await app.executeCommand('stop');
-	});
-
-program
-	.command('upgrade')
-	.description('Upgrade TimePort to the latest version')
-	.action(() => {
-		try {
-			Logger.info('Checking for updates...');
-			const currentVersion = program.version();
-			Logger.info(`Current version: ${currentVersion}`);
-			Logger.info('Upgrading TimePort...');
-			execSync('pnpm add -g https://github.com/villekivela/timeport', { stdio: 'inherit' });
-			Logger.success('TimePort upgraded successfully!');
-		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			Logger.error(`Error upgrading TimePort: ${message}`);
-			process.exit(1);
-		}
 	});
 
 // Default command (interactive mode)
