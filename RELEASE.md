@@ -5,12 +5,11 @@ To create a new release:
 1. Update versions in:
 
    - package.json
-   - bin/tp.js
 
 2. Commit the changes:
 
    ```bash
-   git add package.json bin/tp.js
+   git add package.json
    git commit -m "Bump version to x.x.x"
    ```
 

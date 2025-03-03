@@ -8,6 +8,19 @@ import globals from 'globals';
 export default [
 	eslint.configs.recommended,
 	{
+		// Add Node environment for all JavaScript files
+		files: ['**/*.js'],
+		languageOptions: {
+			ecmaVersion: 'latest',
+			sourceType: 'module',
+			globals: {
+				...globals.node,
+			},
+		},
+		env: { node: true },
+	},
+	{
+		env: { node: true },
 		files: ['**/*.ts'],
 		languageOptions: {
 			parser: tsParser,

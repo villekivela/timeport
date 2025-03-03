@@ -1,8 +1,16 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { execSync } from 'child_process';
-import { TimeTracker } from '../timeport.js';
+import { App } from '../app.js';
 import { validateConfig } from '../config.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { Logger } from '../utils/logger.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf8'));
 
 const program = new Command();
 
@@ -11,30 +19,30 @@ validateConfig();
 program
 	.name('tp')
 	.description('CLI tool to bridge time tracking between Jira and Harvest')
-	.version('1.0.10');
+	.version(packageJson.version);
 
 program
 	.command('start')
 	.description('Start a new timer with Jira issues')
 	.action(async () => {
-		const timeTracker = new TimeTracker();
-		await timeTracker.executeCommand('start');
+		const app = new App();
+		await app.executeCommand('start');
 	});
 
 program
 	.command('update')
 	.description('Update running timer notes')
 	.action(async () => {
-		const timeTracker = new TimeTracker();
-		await timeTracker.executeCommand('update');
+		const app = new App();
+		await app.executeCommand('update');
 	});
 
 program
 	.command('stop')
 	.description('Stop running timer')
 	.action(async () => {
-		const timeTracker = new TimeTracker();
-		await timeTracker.executeCommand('stop');
+		const app = new App();
+		await app.executeCommand('stop');
 	});
 
 program
@@ -42,25 +50,23 @@ program
 	.description('Upgrade TimePort to the latest version')
 	.action(() => {
 		try {
-			console.log('Checking for updates...');
+			Logger.info('Checking for updates...');
 			const currentVersion = program.version();
-			console.log(`Current version: ${currentVersion}`);
-			console.log('Upgrading TimePort...');
+			Logger.info(`Current version: ${currentVersion}`);
+			Logger.info('Upgrading TimePort...');
 			execSync('pnpm add -g https://github.com/villekivela/timeport', { stdio: 'inherit' });
-			console.log('TimePort upgraded successfully!');
+			Logger.success('TimePort upgraded successfully!');
 		} catch (error) {
-			console.error(
-				'Error upgrading TimePort:',
-				error instanceof Error ? error.message : String(error)
-			);
+			const message = error instanceof Error ? error.message : String(error);
+			Logger.error(`Error upgrading TimePort: ${message}`);
 			process.exit(1);
 		}
 	});
 
 // Default command (interactive mode)
 if (process.argv.length === 2) {
-	const timeTracker = new TimeTracker();
-	timeTracker.run().catch(() => process.exit(1));
+	const app = new App();
+	app.run().catch(() => process.exit(1));
 } else {
 	program.parse();
 }

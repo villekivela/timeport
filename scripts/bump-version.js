@@ -18,20 +18,6 @@ async function updateVersion(newVersion) {
 		await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
 		console.log('Updated package.json version to:', newVersion);
 
-		// Update bin/tp.ts
-		const tpPath = path.join(ROOT_DIR, 'src', 'bin', 'tp.ts');
-		console.log('Reading tp.ts from:', tpPath);
-		let tpContent = await fs.readFile(tpPath, 'utf8');
-		const oldContent = tpContent;
-		tpContent = tpContent.replace(/\.version\(['"].*?['"]\)/, `.version('${newVersion}')`);
-
-		if (oldContent === tpContent) {
-			console.log('Warning: No version string found in tp.ts');
-		} else {
-			await fs.writeFile(tpPath, tpContent);
-			console.log('Updated tp.ts version to:', newVersion);
-		}
-
 		// Build TypeScript
 		console.log('Building TypeScript...');
 		execSync('pnpm run build', { stdio: 'inherit' });
