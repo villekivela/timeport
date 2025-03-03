@@ -6,9 +6,8 @@ const exec = promisify(execCallback);
 
 export class HarvestService {
 	async startTimer(notes: string): Promise<void> {
-		const command = notes
-			? `hrvst start ${config.harvest.projectAlias} --notes "${notes}"`
-			: `hrvst start ${config.harvest.projectAlias}`;
+		const startCommand = `hrvst start ${config.harvest.projectAlias}`;
+		const command = notes ? `${startCommand} --notes "${notes}"` : startCommand;
 
 		const { stdout } = await exec(command);
 		if (notes) {
