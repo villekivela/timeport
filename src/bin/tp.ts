@@ -14,7 +14,7 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'
 
 const program = new Command();
 
-program.version('1.1.1'); // VERSION STRING
+program.version('1.1.2'); // VERSION STRING
 
 validateConfig();
 
