@@ -1,57 +1,57 @@
 {
-	"name": "timeport",
-	"version": "1.0.10",
-	"description": "A CLI tool to bridge time tracking between Jira and Harvest",
-	"bin": {
-		"tp": "./dist/bin/tp.js"
-	},
-	"type": "module",
-	"main": "dist/main.js",
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --watch",
-		"test": "node --test dist/tests/",
-		"test:watch": "node --test --watch dist/tests/",
-		"lint": "eslint . --ext .ts --ignore-pattern 'dist/'",
-		"prestart": "pnpm run build",
-		"start": "node dist/main.js",
-		"start:timer": "node dist/bin/tp.js start",
-		"update:timer": "node dist/bin/tp.js update",
-		"stop:timer": "node dist/bin/tp.js stop",
-		"bump": "node scripts/bump-version.js",
-		"prepack": "npm run build",
-		"fix:prettier": "prettier --write \"src/**/*.ts\"",
-		"format": "npm run fix:prettier && npm run lint"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"packageManager": "pnpm@10.4.1",
-	"dependencies": {
-		"chalk": "^5.4.1",
-		"inquirer": "^12.4.2",
-		"node-fetch": "^3.3.2",
-		"commander": "^11.1.0",
-		"yaml": "^2.3.4"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/villekivela/timeport.git"
-	},
-	"devDependencies": {
-		"@types/inquirer": "^9.0.7",
-		"@types/node": "^20.11.0",
-		"@typescript-eslint/eslint-plugin": "^7.0.0",
-		"@typescript-eslint/parser": "^7.0.0",
-		"@eslint/js": "^9.21.0",
-		"eslint": "^9.21.0",
-		"eslint-config-prettier": "^10.0.1",
-		"eslint-plugin-import": "^2.31.0",
-		"globals": "^13.24.0",
-		"prettier": "^3.5.2",
-		"typescript": "~5.5.3"
-	}
+  "name": "timeport",
+  "version": "1.1.0",
+  "description": "A CLI tool to bridge time tracking between Jira and Harvest",
+  "bin": {
+    "tp": "./dist/bin/tp.js"
+  },
+  "type": "module",
+  "main": "dist/main.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test dist/tests/",
+    "test:watch": "node --test --watch dist/tests/",
+    "lint": "eslint . --ext .ts --ignore-pattern 'dist/'",
+    "prestart": "pnpm run build",
+    "start": "node dist/main.js",
+    "start:timer": "node dist/bin/tp.js start",
+    "update:timer": "node dist/bin/tp.js update",
+    "stop:timer": "node dist/bin/tp.js stop",
+    "bump": "node scripts/bump-version.js",
+    "prepack": "npm run build",
+    "fix:prettier": "prettier --write \"src/**/*.ts\"",
+    "format": "npm run fix:prettier && npm run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.4.1",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "inquirer": "^12.4.2",
+    "node-fetch": "^3.3.2",
+    "commander": "^11.1.0",
+    "yaml": "^2.3.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/villekivela/timeport.git"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@eslint/js": "^9.21.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^13.24.0",
+    "prettier": "^3.5.2",
+    "typescript": "~5.5.3"
+  }
 }
