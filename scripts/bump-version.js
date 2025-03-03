@@ -9,7 +9,7 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 
 async function updateVersion(newVersion) {
 	try {
-		// Update package.json
+		// INFO: Update package.json
 		const packagePath = path.join(ROOT_DIR, 'package.json');
 		console.log('Reading package.json from:', packagePath);
 		const packageJson = JSON.parse(await fs.readFile(packagePath, 'utf8'));
@@ -18,7 +18,7 @@ async function updateVersion(newVersion) {
 		await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n');
 		console.log('Updated package.json version to:', newVersion);
 
-		// Update src/bin/tp.ts
+		// INFO: Update src/bin/tp.ts
 		const tpPath = path.join(ROOT_DIR, 'src/bin/tp.ts');
 		let tpContent = await fs.readFile(tpPath, 'utf8');
 		tpContent = tpContent.replace(
@@ -28,11 +28,9 @@ async function updateVersion(newVersion) {
 		await fs.writeFile(tpPath, tpContent);
 		console.log('Updated tp.ts version to:', newVersion);
 
-		// Build TypeScript
 		console.log('Building TypeScript...');
 		execSync('pnpm run build', { stdio: 'inherit' });
 
-		// Git commands
 		console.log('Committing changes...');
 		execSync('git add package.json src/bin/tp.ts', { stdio: 'inherit' });
 		execSync(`git commit -m "Bump version to ${newVersion}"`, { stdio: 'inherit' });
@@ -48,7 +46,6 @@ async function updateVersion(newVersion) {
 	}
 }
 
-// Get version from command line argument
 const newVersion = process.argv[2];
 if (!newVersion) {
 	console.error('Please provide a version number');
