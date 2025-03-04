@@ -8,7 +8,6 @@ TimePort is a CLI tool that bridges time tracking between Jira and Harvest, maki
 - pnpm
 - A Harvest account with API access
 - A Jira account with API access
-- [hrvst CLI tool](https://github.com/harvesthq/harvest-cli) installed and configured
 
 ## Installation
 
@@ -18,7 +17,15 @@ You can install TimePort directly from GitHub:
 pnpm add -g https://github.com/villekivela/timeport
 ```
 
-Then create a `config.yaml` file in your config directory (`~/.config/timeport/config.yaml`):
+## Configuration
+
+1. Create a config directory:
+
+```bash
+mkdir -p ~/.config/timeport
+```
+
+2. Create a `config.yaml` file in `~/.config/timeport/config.yaml`:
 
 ```yaml
 # Jira Configuration
@@ -30,13 +37,21 @@ jira:
   # Your Jira instance URL
   baseUrl: https://your-company.atlassian.net
 
-# Harvest Configuration
-harvest:
-  # Your Harvest project alias (from hrvst CLI configuration)
-  projectAlias: your_harvest_project_alias
+# Harvest Configuration will be set up automatically on first run
+harvest: {}
 ```
 
-You can copy the sample configuration file from the repository's `config.sample.yaml` and modify it with your credentials.
+You can copy the sample configuration file from the repository's `config.sample.yaml` and modify it with your Jira credentials.
+
+### Harvest Authentication
+
+On first run, TimePort will guide you through the Harvest authentication process:
+
+1. Get your Harvest Personal Access Token from https://id.getharvest.com/developers
+2. When prompted, enter your Personal Access Token
+3. Select your project and task for time tracking
+
+The Harvest configuration will be automatically saved to your config file.
 
 ## Updating
 
@@ -45,6 +60,16 @@ To upgrade TimePort to the latest version, simply run:
 ```bash
 tp upgrade
 ```
+
+## Uninstalling
+
+To remove TimePort from your system:
+
+```bash
+tp uninstall
+```
+
+This will uninstall the CLI tool. Your configuration in `~/.config/timeport` will remain untouched in case you want to reinstall later.
 
 ## Usage
 

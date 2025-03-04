@@ -11,9 +11,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && tsc",
     "dev": "tsc --watch",
-    "test": "node --test dist/tests/",
+    "test": "pnpm build && NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "node --test --watch dist/tests/",
     "lint": "eslint . --ext .ts --ignore-pattern 'dist/'",
     "prestart": "pnpm run build",
@@ -24,7 +25,9 @@
     "bump": "node scripts/bump-version.js",
     "prepack": "npm run build",
     "fix:prettier": "prettier --write \"src/**/*.ts\"",
-    "format": "npm run fix:prettier && npm run lint"
+    "format": "npm run fix:prettier && npm run lint",
+    "test:version": "pnpm build && NODE_OPTIONS=--experimental-vm-modules jest tests/version.test.ts",
+    "prerelease": "pnpm run build && pnpm run test:version"
   },
   "keywords": [],
   "author": "",
@@ -32,9 +35,10 @@
   "packageManager": "pnpm@10.4.1",
   "dependencies": {
     "chalk": "^5.4.1",
+    "commander": "^11.1.0",
     "inquirer": "^12.4.2",
     "node-fetch": "^3.3.2",
-    "commander": "^11.1.0",
+    "open": "^10.1.0",
     "yaml": "^2.3.4"
   },
   "repository": {
@@ -42,16 +46,20 @@
     "url": "https://github.com/villekivela/timeport.git"
   },
   "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@jest/globals": "^29.7.0",
     "@types/inquirer": "^9.0.7",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.11.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
-    "@eslint/js": "^9.21.0",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "^2.31.0",
     "globals": "^13.24.0",
+    "jest": "^29.7.0",
     "prettier": "^3.5.2",
+    "ts-jest": "^29.2.6",
     "typescript": "~5.5.3"
   }
 }
