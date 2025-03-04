@@ -14,8 +14,6 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'
 
 const program = new Command();
 
-program.version('1.2.0'); // INFO: VERSION STRING
-
 program
 	.name('tp')
 	.description('TimePort - Bridge between Jira and Harvest time tracking')
