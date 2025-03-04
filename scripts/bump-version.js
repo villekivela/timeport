@@ -9,7 +9,7 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 
 async function updateVersion(newVersion) {
 	try {
-		// INFO: Update package.json
+		// NOTE: Update package.json
 		const packagePath = path.join(ROOT_DIR, 'package.json');
 		console.log('Reading package.json from:', packagePath);
 		const packageJson = JSON.parse(await fs.readFile(packagePath, 'utf8'));
@@ -45,7 +45,7 @@ if (!newVersion) {
 	process.exit(1);
 }
 
-// Validate version format
+// NOTE: Validate version format
 if (!/^\d+\.\d+\.\d+$/.test(newVersion)) {
 	console.error('Version must be in format X.Y.Z');
 	process.exit(1);

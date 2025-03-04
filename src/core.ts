@@ -1,14 +1,13 @@
 import inquirer from 'inquirer';
 import { StartTimerCommand, StopTimerCommand, UpdateTimerCommand } from './commands/index.js';
-import { HarvestAuthService } from './services/harvest-auth.service.js';
-import { HarvestService } from './services/harvest.service.js';
-import { JiraService } from './services/jira.service.js';
+import { HarvestAuthService, HarvestService } from './services/harvest/index.js';
+import { JiraService } from './services/jira/index.js';
 import { Command } from './types/index.js';
-import { Logger } from './utils/logger.js';
+import { Logger } from './utils/index.js';
 
 type CommandName = 'start' | 'update' | 'stop';
 
-export class App {
+export class TimePortManager {
 	#jiraService: JiraService;
 	#harvestService: HarvestService;
 	#commands: Record<CommandName, Command>;

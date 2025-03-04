@@ -1,15 +1,6 @@
 import fetch from 'node-fetch';
-import { config } from '../config.js';
-import { JiraIssue } from '../types/index.js';
-
-interface JiraApiResponse {
-	issues: Array<{
-		key: string;
-		fields: {
-			summary: string;
-		};
-	}>;
-}
+import { JiraApiResponse, JiraIssue } from '../../types/index.js';
+import { config } from '../../utils/index.js';
 
 export class JiraService {
 	#baseUrl: string;
@@ -21,11 +12,12 @@ export class JiraService {
 	}
 
 	async fetchUserIssues(): Promise<JiraIssue[]> {
-		const JQL_QUERY = `assignee = currentUser() AND statusCategory != Done AND issuetype != Sub-task`;
-		const API_URL = `${this.#baseUrl}/rest/api/3/search?jql=${encodeURIComponent(JQL_QUERY)}`;
-
-		const response = await fetch(API_URL, {
-			method: 'GET',
+		const jql = `assignee = currentUser()
+                AND statusCategory != Done
+                AND issuetype != Sub-task
+                ORDER BY updated DESC`;
+		const apiUrl = `${this.#baseUrl}/rest/api/3/search?jql=${encodeURIComponent(jql)}`;
+		const response = await fetch(apiUrl, {
 			headers: {
 				Authorization: `Basic ${this.#auth}`,
 				Accept: 'application/json',
@@ -38,7 +30,7 @@ export class JiraService {
 
 		const data = (await response.json()) as JiraApiResponse;
 		return data.issues.map((issue) => ({
-			name: `[${issue.key}] ${issue.fields.summary}`,
+			name: `${issue.key}: ${issue.fields.summary}`,
 			value: issue.key,
 		}));
 	}

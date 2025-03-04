@@ -31,26 +31,26 @@ describe('Version consistency', () => {
 		}
 	});
 
-	test('dist/bin/tp.js should use correct version', () => {
+	test('dist/cli.js should use correct version', () => {
 		try {
-			const filePath = join(ROOT_DIR, 'dist/bin/tp.js');
-			const tpContent = readFileSync(filePath, 'utf8');
+			const filePath = join(ROOT_DIR, 'dist/cli.js');
+			const cliContent = readFileSync(filePath, 'utf8');
 
-			// Check for either static version string or dynamic package.json loading
-			const staticVersionMatch = tpContent.match(/\.version\(['"](.*?)['"]\)/);
-			const dynamicVersionMatch = tpContent.includes('.version(packageJson.version)');
+			// NOTE: Check for either static version string or dynamic package.json loading
+			const staticVersionMatch = cliContent.match(/\.version\(['"](.*?)['"]\)/);
+			const dynamicVersionMatch = cliContent.includes('.version(packageJson.version)');
 
 			if (staticVersionMatch) {
 				expect(staticVersionMatch[1]).toBe(expectedVersion);
 			} else if (dynamicVersionMatch) {
-				// If using dynamic version, verify package.json is being loaded correctly
-				expect(tpContent).toContain('const packageJson = JSON.parse(readFileSync(');
-				expect(tpContent).toContain('package.json');
+				// NOTE: If using dynamic version, verify package.json is being loaded correctly
+				expect(cliContent).toContain('const packageJson = JSON.parse(readFileSync(');
+				expect(cliContent).toContain('package.json');
 			} else {
-				throw new Error('Could not find version configuration in tp.js');
+				throw new Error('Could not find version configuration in cli.js');
 			}
 		} catch (error) {
-			throw new Error('Failed to read dist/bin/tp.js. Make sure to build the project first.');
+			throw new Error('Failed to read dist/cli.js. Make sure to build the project first.');
 		}
 	});
 });

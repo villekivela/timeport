@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 import { execSync } from 'child_process';
 import { Command } from 'commander';
-import { readFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { App } from '../app.js';
-import { validateConfig } from '../config.js';
-import { Logger } from '../utils/logger.js';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { TimePortManager } from './core.js';
+import { Logger, validateConfig } from './utils/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf8'));
+// NOTE: Get the directory path of the current module
+const __dirname = dirname(fileURLToPath(import.meta.url));
+// NOTE: Go up one level from dist to reach the project root
+const ROOT_DIR = join(__dirname, '..');
+
+// NOTE: Read package.json from the project root
+const packageJson = JSON.parse(readFileSync(join(ROOT_DIR, 'package.json'), 'utf8'));
 
 const program = new Command();
 
@@ -66,30 +69,30 @@ program
 	.command('start')
 	.description('Start a new timer with Jira issues')
 	.action(async () => {
-		const app = new App();
-		await app.executeCommand('start');
+		const timePortManager = new TimePortManager();
+		await timePortManager.executeCommand('start');
 	});
 
 program
 	.command('update')
 	.description('Update running timer notes')
 	.action(async () => {
-		const app = new App();
-		await app.executeCommand('update');
+		const timePortManager = new TimePortManager();
+		await timePortManager.executeCommand('update');
 	});
 
 program
 	.command('stop')
 	.description('Stop running timer')
 	.action(async () => {
-		const app = new App();
-		await app.executeCommand('stop');
+		const timePortManager = new TimePortManager();
+		await timePortManager.executeCommand('stop');
 	});
 
 // INFO: Default command (interactive mode)
 if (process.argv.length === 2) {
-	const app = new App();
-	app.run().catch(() => process.exit(1));
+	const timeTracker = new TimePortManager();
+	timeTracker.run().catch(() => process.exit(1));
 } else {
 	program.parse();
 }

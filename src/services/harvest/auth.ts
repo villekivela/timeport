@@ -3,19 +3,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { stringify } from 'yaml';
-import { config } from '../config.js';
-import { Logger } from '../utils/logger.js';
-import { getHarvestHeaders } from '../utils/harvest-headers.js';
-
-interface ProjectAssignment {
-	id: number;
-	name: string;
-}
-
-interface TaskAssignment {
-	id: number;
-	name: string;
-}
+import { ProjectAssignment, TaskAssignment } from '../../types/index.js';
+import { config, getHarvestHeaders, Logger } from '../../utils/index.js';
 
 export class HarvestAuthService {
 	async authenticate(): Promise<void> {
@@ -48,14 +37,11 @@ export class HarvestAuthService {
 		config.harvest.accessToken = accessToken;
 		config.harvest.accountId = accountId;
 
-		// NOTE: Get project and task IDs
 		await this.#setupProjectAndTask(accessToken, accountId);
-
 		await this.#saveConfig();
 		Logger.success('Harvest authentication completed successfully');
 	}
 
-	// NOTE: Fetches and configures project and task IDs through user interaction
 	async #setupProjectAndTask(accessToken: string, accountId: string): Promise<void> {
 		const projectsResponse = await fetch(
 			'https://api.harvestapp.com/api/v2/users/me/project_assignments',
@@ -76,7 +62,6 @@ export class HarvestAuthService {
 			throw new Error('No projects found');
 		}
 
-		// NOTE: Let user select project
 		const { projectId } = await inquirer.prompt({
 			type: 'list',
 			name: 'projectId',
@@ -85,7 +70,6 @@ export class HarvestAuthService {
 		});
 		config.harvest.projectId = projectId;
 
-		// NOTE: Get tasks for selected project
 		const selectedAssignment = projects.project_assignments.find(
 			(a: any) => a.project.id === projectId
 		);
@@ -98,7 +82,6 @@ export class HarvestAuthService {
 			throw new Error('No tasks found for selected project');
 		}
 
-		// NOTE: Let user select task
 		const { taskId } = await inquirer.prompt({
 			type: 'list',
 			name: 'taskId',
@@ -108,19 +91,13 @@ export class HarvestAuthService {
 		config.harvest.taskId = taskId;
 	}
 
-	// NOTE: Persists the configuration to the user's config file
 	async #saveConfig(): Promise<void> {
 		try {
 			const configDir = join(homedir(), '.config', 'timeport');
 			const configPath = join(configDir, 'config.yaml');
 
-			// NOTE: Create config directory if it doesn't exist
 			await mkdir(configDir, { recursive: true });
-
-			// NOTE: Convert config object to YAML
 			const yamlContent = stringify(config);
-
-			// NOTE: Write the updated config back to file
 			await writeFile(configPath, yamlContent, 'utf8');
 
 			Logger.info('Configuration saved successfully');

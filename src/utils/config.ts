@@ -3,16 +3,13 @@ import { homedir } from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'yaml';
-import { Config } from './types/index.js';
-
-// NOTE: Configuration management module for the application
+import { Config } from '../types/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_DIR =
 	process.env.NODE_ENV === 'development' ? __dirname : join(homedir(), '.config', 'timeport');
 const CONFIG_PATH = join(CONFIG_DIR, 'config.yaml');
 
-// NOTE: Loads configuration from YAML file
 function loadConfig(): Config {
 	try {
 		const configFile = readFileSync(CONFIG_PATH, 'utf8');
@@ -26,7 +23,6 @@ function loadConfig(): Config {
 
 export const config: Config = loadConfig();
 
-// WARN: Validates required configuration values are present
 export const validateConfig = (): void => {
 	const { jira } = config;
 	const missingVars: string[] = [];

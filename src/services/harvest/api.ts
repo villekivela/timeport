@@ -1,27 +1,21 @@
 import fetch from 'node-fetch';
-import { config } from '../config.js';
-import { getHarvestHeaders } from '../utils/harvest-headers.js';
-
-// NOTE: Interface for parsing Harvest API responses
-interface TimeEntry {
-	id: string;
-	time_entries?: { id: string }[];
-}
+import { TimeEntry } from '../../types/index.js';
+import { config, getHarvestHeaders } from '../../utils/index.js';
 
 export class HarvestService {
 	#baseUrl = 'https://api.harvestapp.com/api/v2';
 	#headers: Record<string, string> = {};
 
 	constructor() {
-		this.updateHeaders();
+		this.#updateHeaders();
 	}
 
-	private updateHeaders(): void {
+	#updateHeaders(): void {
 		this.#headers = getHarvestHeaders(config.harvest.accessToken!, config.harvest.accountId!);
 	}
 
 	async startTimer(notes?: string): Promise<void> {
-		this.updateHeaders();
+		this.#updateHeaders();
 		const response = await fetch(`${this.#baseUrl}/time_entries`, {
 			method: 'POST',
 			headers: this.#headers,
@@ -37,12 +31,11 @@ export class HarvestService {
 			throw new Error(`Failed to start timer: ${response.statusText}`);
 		}
 
-		// NOTE: Response data not needed, just ensure request succeeded
 		await response.json();
 	}
 
 	async updateTimer(notes: string): Promise<void> {
-		this.updateHeaders();
+		this.#updateHeaders();
 		const activeTimer = await this.#getActiveTimer();
 		if (!activeTimer) {
 			throw new Error('No active timer found');
@@ -62,7 +55,7 @@ export class HarvestService {
 	}
 
 	async stopTimer(notes?: string): Promise<void> {
-		this.updateHeaders();
+		this.#updateHeaders();
 		const activeTimer = await this.#getActiveTimer();
 		if (!activeTimer) {
 			throw new Error('No active timer found');
@@ -82,8 +75,8 @@ export class HarvestService {
 		}
 	}
 
-	async #getActiveTimer(): Promise<{ id: string } | null> {
-		this.updateHeaders();
+	async #getActiveTimer(): Promise<TimeEntry | null> {
+		this.#updateHeaders();
 		const today = new Date().toISOString().split('T')[0];
 		const response = await fetch(
 			`${this.#baseUrl}/time_entries?is_running=true&from=${today}&to=${today}`,
@@ -96,7 +89,7 @@ export class HarvestService {
 			throw new Error(`Failed to get active timer: ${response.statusText}`);
 		}
 
-		const data = (await response.json()) as TimeEntry;
+		const data = (await response.json()) as { time_entries?: TimeEntry[] };
 		return data.time_entries?.[0] || null;
 	}
 }
