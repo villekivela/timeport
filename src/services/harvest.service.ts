@@ -9,22 +9,22 @@ interface TimeEntry {
 }
 
 export class HarvestService {
-	private baseUrl = 'https://api.harvestapp.com/api/v2';
-	private headers: Record<string, string> = {};
+	#baseUrl = 'https://api.harvestapp.com/api/v2';
+	#headers: Record<string, string> = {};
 
 	constructor() {
 		this.updateHeaders();
 	}
 
 	private updateHeaders(): void {
-		this.headers = getHarvestHeaders(config.harvest.accessToken!, config.harvest.accountId!);
+		this.#headers = getHarvestHeaders(config.harvest.accessToken!, config.harvest.accountId!);
 	}
 
 	async startTimer(notes?: string): Promise<void> {
 		this.updateHeaders();
-		const response = await fetch(`${this.baseUrl}/time_entries`, {
+		const response = await fetch(`${this.#baseUrl}/time_entries`, {
 			method: 'POST',
-			headers: this.headers,
+			headers: this.#headers,
 			body: JSON.stringify({
 				project_id: config.harvest.projectId,
 				task_id: config.harvest.taskId,
@@ -43,14 +43,14 @@ export class HarvestService {
 
 	async updateTimer(notes: string): Promise<void> {
 		this.updateHeaders();
-		const activeTimer = await this.getActiveTimer();
+		const activeTimer = await this.#getActiveTimer();
 		if (!activeTimer) {
 			throw new Error('No active timer found');
 		}
 
-		const response = await fetch(`${this.baseUrl}/time_entries/${activeTimer.id}`, {
+		const response = await fetch(`${this.#baseUrl}/time_entries/${activeTimer.id}`, {
 			method: 'PATCH',
-			headers: this.headers,
+			headers: this.#headers,
 			body: JSON.stringify({
 				notes: notes,
 			}),
@@ -63,7 +63,7 @@ export class HarvestService {
 
 	async stopTimer(notes?: string): Promise<void> {
 		this.updateHeaders();
-		const activeTimer = await this.getActiveTimer();
+		const activeTimer = await this.#getActiveTimer();
 		if (!activeTimer) {
 			throw new Error('No active timer found');
 		}
@@ -72,9 +72,9 @@ export class HarvestService {
 			await this.updateTimer(notes);
 		}
 
-		const response = await fetch(`${this.baseUrl}/time_entries/${activeTimer.id}/stop`, {
+		const response = await fetch(`${this.#baseUrl}/time_entries/${activeTimer.id}/stop`, {
 			method: 'PATCH',
-			headers: this.headers,
+			headers: this.#headers,
 		});
 
 		if (!response.ok) {
@@ -82,13 +82,13 @@ export class HarvestService {
 		}
 	}
 
-	private async getActiveTimer(): Promise<{ id: string } | null> {
+	async #getActiveTimer(): Promise<{ id: string } | null> {
 		this.updateHeaders();
 		const today = new Date().toISOString().split('T')[0];
 		const response = await fetch(
-			`${this.baseUrl}/time_entries?is_running=true&from=${today}&to=${today}`,
+			`${this.#baseUrl}/time_entries?is_running=true&from=${today}&to=${today}`,
 			{
-				headers: this.headers,
+				headers: this.#headers,
 			}
 		);
 

@@ -9,30 +9,30 @@ import { Logger } from './utils/logger.js';
 type CommandName = 'start' | 'update' | 'stop';
 
 export class App {
-	private jiraService: JiraService;
-	private harvestService: HarvestService;
-	private commands: Record<CommandName, Command>;
+	#jiraService: JiraService;
+	#harvestService: HarvestService;
+	#commands: Record<CommandName, Command>;
 
 	constructor() {
-		this.jiraService = new JiraService();
-		this.harvestService = new HarvestService();
-		this.commands = {
-			start: new StartTimerCommand(this.harvestService),
-			update: new UpdateTimerCommand(this.harvestService),
-			stop: new StopTimerCommand(this.harvestService),
+		this.#jiraService = new JiraService();
+		this.#harvestService = new HarvestService();
+		this.#commands = {
+			start: new StartTimerCommand(this.#harvestService),
+			update: new UpdateTimerCommand(this.#harvestService),
+			stop: new StopTimerCommand(this.#harvestService),
 		};
 	}
 
-	private async ensureAuthenticated(): Promise<void> {
+	async #ensureAuthenticated(): Promise<void> {
 		const authService = new HarvestAuthService();
 		await authService.authenticate();
 	}
 
 	async executeCommand(commandName: CommandName): Promise<void> {
 		try {
-			await this.ensureAuthenticated();
-			const issues = await this.jiraService.fetchUserIssues();
-			const command = this.commands[commandName];
+			await this.#ensureAuthenticated();
+			const issues = await this.#jiraService.fetchUserIssues();
+			const command = this.#commands[commandName];
 			await command.execute(issues);
 		} catch (error) {
 			Logger.error('Operation failed', error instanceof Error ? error : new Error(String(error)));
@@ -42,7 +42,7 @@ export class App {
 
 	async run(): Promise<void> {
 		try {
-			await this.ensureAuthenticated();
+			await this.#ensureAuthenticated();
 			const { action } = await inquirer.prompt<{ action: CommandName }>([
 				{
 					type: 'list',

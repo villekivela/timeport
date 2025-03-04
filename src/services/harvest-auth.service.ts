@@ -49,14 +49,14 @@ export class HarvestAuthService {
 		config.harvest.accountId = accountId;
 
 		// NOTE: Get project and task IDs
-		await this.setupProjectAndTask(accessToken, accountId);
+		await this.#setupProjectAndTask(accessToken, accountId);
 
-		await this.saveConfig();
+		await this.#saveConfig();
 		Logger.success('Harvest authentication completed successfully');
 	}
 
 	// NOTE: Fetches and configures project and task IDs through user interaction
-	private async setupProjectAndTask(accessToken: string, accountId: string): Promise<void> {
+	async #setupProjectAndTask(accessToken: string, accountId: string): Promise<void> {
 		const projectsResponse = await fetch(
 			'https://api.harvestapp.com/api/v2/users/me/project_assignments',
 			{ headers: getHarvestHeaders(accessToken, accountId) }
@@ -109,7 +109,7 @@ export class HarvestAuthService {
 	}
 
 	// NOTE: Persists the configuration to the user's config file
-	private async saveConfig(): Promise<void> {
+	async #saveConfig(): Promise<void> {
 		try {
 			const configDir = join(homedir(), '.config', 'timeport');
 			const configPath = join(configDir, 'config.yaml');

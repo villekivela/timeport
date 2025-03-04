@@ -12,22 +12,22 @@ interface JiraApiResponse {
 }
 
 export class JiraService {
-	private baseUrl: string;
-	private auth: string;
+	#baseUrl: string;
+	#auth: string;
 
 	constructor() {
-		this.baseUrl = config.jira.baseUrl;
-		this.auth = Buffer.from(`${config.jira.username}:${config.jira.apiToken}`).toString('base64');
+		this.#baseUrl = config.jira.baseUrl;
+		this.#auth = Buffer.from(`${config.jira.username}:${config.jira.apiToken}`).toString('base64');
 	}
 
 	async fetchUserIssues(): Promise<JiraIssue[]> {
 		const JQL_QUERY = `assignee = currentUser() AND statusCategory != Done AND issuetype != Sub-task`;
-		const API_URL = `${this.baseUrl}/rest/api/3/search?jql=${encodeURIComponent(JQL_QUERY)}`;
+		const API_URL = `${this.#baseUrl}/rest/api/3/search?jql=${encodeURIComponent(JQL_QUERY)}`;
 
 		const response = await fetch(API_URL, {
 			method: 'GET',
 			headers: {
-				Authorization: `Basic ${this.auth}`,
+				Authorization: `Basic ${this.#auth}`,
 				Accept: 'application/json',
 			},
 		});
