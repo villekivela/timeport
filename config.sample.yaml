@@ -9,5 +9,12 @@ jira:
 
 # Harvest Configuration
 harvest:
-  # Your Harvest project alias (from hrvst CLI configuration)
-  projectAlias: your_harvest_project_alias
+  # Your Harvest personal access token (get from https://id.getharvest.com/developers)
+  accessToken: your_personal_access_token
+  accountId: # Will be set automatically
+  projectId: # Optional, can be selected during first run
+  taskId: # Optional, can be selected during first run
+
+# NOTE: Configuration template
+
+# WARN: Make sure to update these values

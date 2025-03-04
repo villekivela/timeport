@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
-import { Logger } from '../utils/logger.js';
 import { HarvestService } from '../services/harvest.service.js';
-import { JiraIssue, Command } from '../types/index.js';
+import { Command, JiraIssue } from '../types/index.js';
+import { Logger } from '../utils/logger.js';
 
 export class StartTimerCommand implements Command {
 	constructor(private harvestService: HarvestService) {}

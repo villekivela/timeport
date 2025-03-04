@@ -14,11 +14,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Get all history for proper version checking
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -31,6 +34,9 @@ jobs:
       - name: Build TypeScript
         run: pnpm run build
 
+      - name: Run version tests
+        run: pnpm run test:version
+
       - name: Check version consistency
         run: |
           # Get version from tag
@@ -39,17 +45,15 @@ jobs:
           # Get version from package.json
           PKG_VERSION=$(node -p "require('./package.json').version")
 
-          # Get version from src/bin/tp.ts
-          TP_VERSION=$(grep -o "program\.version('[^']*')" src/bin/tp.ts | grep -o "'.*'" | tr -d "'")
-
-          # Check if versions match
+          # Compare versions
           if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
             echo "Version mismatch: Tag version ($TAG_VERSION) doesn't match package.json version ($PKG_VERSION)"
             exit 1
           fi
 
-          if [ "$TAG_VERSION" != "$TP_VERSION" ]; then
-            echo "Version mismatch: Tag version ($TAG_VERSION) doesn't match src/bin/tp.ts version ($TP_VERSION)"
+          # Verify the built files exist
+          if [ ! -d "dist" ]; then
+            echo "Build directory 'dist' not found"
             exit 1
           fi
 

@@ -10,7 +10,10 @@ export interface Config {
 		baseUrl: string;
 	};
 	harvest: {
-		projectAlias: string;
+		accessToken?: string;
+		accountId?: string;
+		projectId?: string;
+		taskId?: string;
 	};
 }
 
@@ -21,4 +24,25 @@ export interface TimerDetails {
 
 export interface Command {
 	execute(issues: JiraIssue[]): Promise<void>;
+}
+
+export interface HarvestAuthResponse {
+	access_token: string;
+	scope: string;
+	token_type: string;
+}
+
+export interface HarvestAccount {
+	id: string;
+	name: string;
+}
+
+export interface HarvestProject {
+	id: string;
+	name: string;
+}
+
+export interface HarvestTask {
+	id: string;
+	name: string;
 }
