@@ -14,7 +14,7 @@ export class HarvestService {
 		this.#headers = getHarvestHeaders(config.harvest.accessToken!, config.harvest.accountId!);
 	}
 
-	async startTimer(notes?: string): Promise<void> {
+	async startTimer(notes: string = ''): Promise<void> {
 		this.#updateHeaders();
 		const response = await fetch(`${this.#baseUrl}/time_entries`, {
 			method: 'POST',
@@ -22,7 +22,7 @@ export class HarvestService {
 			body: JSON.stringify({
 				project_id: config.harvest.projectId,
 				task_id: config.harvest.taskId,
-				notes: notes || '',
+				notes: notes,
 				spent_date: new Date().toISOString().split('T')[0],
 			}),
 		});

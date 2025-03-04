@@ -34,7 +34,7 @@ export class StartTimerCommand implements Command {
 
 			await this.harvestService.startTimer(notes);
 		} else {
-			await this.harvestService.startTimer('');
+			await this.harvestService.startTimer();
 		}
 
 		Logger.success('Timer started successfully');

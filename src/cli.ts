@@ -10,17 +10,17 @@ import { Logger, validateConfig } from './utils/index.js';
 // NOTE: Get the directory path of the current module
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // NOTE: Go up one level from dist to reach the project root
-const ROOT_DIR = join(__dirname, '..');
+const PACKAGE_ROOT = join(__dirname, '..');
 
 // NOTE: Read package.json from the project root
-const packageJson = JSON.parse(readFileSync(join(ROOT_DIR, 'package.json'), 'utf8'));
+const packageConfig = JSON.parse(readFileSync(join(PACKAGE_ROOT, 'package.json'), 'utf8'));
 
 const program = new Command();
 
 program
 	.name('tp')
 	.description('TimePort - Bridge between Jira and Harvest time tracking')
-	.version(packageJson.version);
+	.version(packageConfig.version);
 
 program
 	.command('upgrade')
