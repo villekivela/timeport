@@ -12,14 +12,6 @@ export default {
 			'ts-jest',
 			{
 				useESM: true,
-				tsconfig: {
-					module: 'esnext',
-					moduleResolution: 'nodenext',
-					target: 'es2022',
-					esModuleInterop: true,
-					resolveJsonModule: true,
-					allowJs: true,
-				},
 			},
 		],
 	},

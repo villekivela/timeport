@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const ROOT_DIR = join(__dirname, '..');
+const ROOT_DIR = process.cwd();
 
 describe('Version consistency', () => {
 	const packageJson = JSON.parse(readFileSync(join(ROOT_DIR, 'package.json'), 'utf8'));
