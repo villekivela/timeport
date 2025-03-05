@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 export default {
-	preset: 'ts-jest',
+	preset: 'ts-jest/presets/default-esm',
 	testEnvironment: 'node',
 	extensionsToTreatAsEsm: ['.ts'],
 	testMatch: ['**/*.test.ts'],
@@ -12,6 +12,14 @@ export default {
 			'ts-jest',
 			{
 				useESM: true,
+				tsconfig: {
+					module: 'esnext',
+					moduleResolution: 'nodenext',
+					target: 'es2022',
+					esModuleInterop: true,
+					resolveJsonModule: true,
+					allowJs: true,
+				},
 			},
 		],
 	},

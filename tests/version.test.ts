@@ -1,9 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { readFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = join(__dirname, '..');
 
 describe('Version consistency', () => {
@@ -16,9 +14,9 @@ describe('Version consistency', () => {
 		expect(expectedVersion).toMatch(semverPattern);
 	});
 
-	test('git tag should match package.json version if exists', () => {
+	test('git tag should match package.json version if exists', async () => {
 		try {
-			const { execSync } = require('child_process');
+			const { execSync } = await import('child_process');
 			const latestTag = execSync('git describe --tags --abbrev=0', { encoding: 'utf8' }).trim();
 
 			if (latestTag) {
@@ -31,26 +29,21 @@ describe('Version consistency', () => {
 		}
 	});
 
-	test('dist/cli.js should use correct version', () => {
+	test('src/cli.ts should use correct version', () => {
 		try {
-			const filePath = join(ROOT_DIR, 'dist/cli.js');
-			const cliContent = readFileSync(filePath, 'utf8');
+			const cliContent = readFileSync(join(ROOT_DIR, 'src/cli.ts'), 'utf8');
 
-			// NOTE: Check for either static version string or dynamic package.json loading
-			const staticVersionMatch = cliContent.match(/\.version\(['"](.*?)['"]\)/);
-			const dynamicVersionMatch = cliContent.includes('.version(packageJson.version)');
+			// Check for version in source file instead of built file
+			const dynamicVersionMatch = cliContent.includes('.version(packageConfig.version)');
 
-			if (staticVersionMatch) {
-				expect(staticVersionMatch[1]).toBe(expectedVersion);
-			} else if (dynamicVersionMatch) {
-				// NOTE: If using dynamic version, verify package.json is being loaded correctly
-				expect(cliContent).toContain('const packageJson = JSON.parse(readFileSync(');
+			if (dynamicVersionMatch) {
+				expect(cliContent).toContain('const packageConfig = JSON.parse(readFileSync(');
 				expect(cliContent).toContain('package.json');
 			} else {
-				throw new Error('Could not find version configuration in cli.js');
+				throw new Error('Could not find version configuration in cli.ts');
 			}
 		} catch (error) {
-			throw new Error('Failed to read dist/cli.js. Make sure to build the project first.');
+			throw new Error('Failed to read src/cli.ts');
 		}
 	});
 });
