@@ -1,10 +1,9 @@
 import inquirer from 'inquirer';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { stringify } from 'yaml';
 import { ProjectAssignment, TaskAssignment } from '../../types/index.js';
-import { config, getHarvestHeaders, Logger } from '../../utils/index.js';
+import { config, getConfigDir, getHarvestHeaders, Logger } from '../../utils/index.js';
 
 export class HarvestAuthService {
 	async authenticate(): Promise<void> {
@@ -93,7 +92,7 @@ export class HarvestAuthService {
 
 	async #saveConfig(): Promise<void> {
 		try {
-			const configDir = join(homedir(), '.config', 'timeport');
+			const configDir = getConfigDir();
 			const configPath = join(configDir, 'config.yaml');
 
 			await mkdir(configDir, { recursive: true });

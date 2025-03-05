@@ -6,8 +6,22 @@ import yaml from 'yaml';
 import { Config } from '../types/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CONFIG_DIR =
-	process.env.NODE_ENV === 'development' ? __dirname : join(homedir(), '.config', 'timeport');
+
+// NOTE: Get the appropriate config directory based on OS and environment
+export const getConfigDir = () => {
+	if (process.env.NODE_ENV === 'development') {
+		return __dirname;
+	}
+
+	// NOTE: Use APPDATA for Windows, .config for Unix-like systems
+	if (process.platform === 'win32') {
+		return join(process.env.APPDATA || join(homedir(), 'AppData', 'Roaming'), 'timeport');
+	}
+
+	return join(homedir(), '.config', 'timeport');
+};
+
+const CONFIG_DIR = getConfigDir();
 const CONFIG_PATH = join(CONFIG_DIR, 'config.yaml');
 
 function loadConfig(): Config {

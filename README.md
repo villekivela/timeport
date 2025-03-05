@@ -19,13 +19,12 @@ pnpm add -g https://github.com/villekivela/timeport
 
 ## Configuration
 
-1. Create a config directory:
+The configuration file will be automatically created in:
 
-```bash
-mkdir -p ~/.config/timeport
-```
+- Windows: %APPDATA%\timeport\config.yaml
+- Linux/macOS: ~/.config/timeport/config.yaml
 
-2. Create a `config.yaml` file in `~/.config/timeport/config.yaml`:
+Create a `config.yaml` file in the appropriate location with the following content:
 
 ```yaml
 # Jira Configuration
@@ -37,17 +36,34 @@ jira:
   # Your Jira instance URL
   baseUrl: https://your-company.atlassian.net
 
-# Harvest Configuration will be set up automatically on first run
-harvest: {}
+# Harvest Configuration
+# Will be set up automatically during first run
+harvest:
+  # Your Harvest personal access token
+  accessToken:
+  # Your Harvest account ID (set automatically)
+  accountId:
+  # Your project ID (can be selected during setup)
+  projectId:
+  # Your task ID (can be selected during setup)
+  taskId:
 ```
 
-You can copy the sample configuration file from the repository's `config.sample.yaml` and modify it with your Jira credentials.
+You can copy the sample configuration file from the repository's `config.sample.yaml` and modify it with your credentials.
+
+### Required Configuration
+
+The following Jira configuration values are required:
+
+- `jira.username`: Your Jira email address
+- `jira.apiToken`: Your Jira API token (generate from Atlassian account settings)
+- `jira.baseUrl`: Your Jira instance URL
 
 ### Harvest Authentication
 
 On first run, TimePort will guide you through the Harvest authentication process:
 
-1. Get your Harvest Personal Access Token from https://id.getharvest.com/developers
+1. Get your Harvest Personal Access Token from <https://id.getharvest.com/developers>
 2. When prompted, enter your Personal Access Token
 3. Select your project and task for time tracking
 

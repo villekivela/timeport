@@ -33,7 +33,7 @@ describe('Version consistency', () => {
 		try {
 			const cliContent = readFileSync(join(ROOT_DIR, 'src/cli.ts'), 'utf8');
 
-			// Check for version in source file instead of built file
+			// NOTE: Check for version in source file instead of built file
 			const dynamicVersionMatch = cliContent.includes('.version(packageConfig.version)');
 
 			if (dynamicVersionMatch) {
