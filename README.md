@@ -19,12 +19,12 @@ pnpm add -g https://github.com/villekivela/timeport
 
 ## Configuration
 
-The configuration file will be automatically created in:
+The configuration file location is:
 
 - Windows: %APPDATA%\timeport\config.yaml
 - Linux/macOS: ~/.config/timeport/config.yaml
 
-Create a `config.yaml` file in the appropriate location with the following content:
+The file will be created automatically during first run, or you can create it manually with the following content:
 
 ```yaml
 # Jira Configuration
