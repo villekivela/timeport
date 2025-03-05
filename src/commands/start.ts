@@ -7,6 +7,27 @@ export class StartTimerCommand implements Command {
 	constructor(private harvestService: HarvestService) {}
 
 	async execute(issues: JiraIssue[]): Promise<void> {
+		const stoppedEntries = await this.harvestService.getStoppedTimeEntriesForToday();
+
+		if (stoppedEntries.length > 0) {
+			const latestEntry = stoppedEntries[0];
+
+			const { startExisting } = await inquirer.prompt<{ startExisting: boolean }>([
+				{
+					type: 'confirm',
+					name: 'startExisting',
+					message: `There is a stopped timer from today. Would you like to start it again? Notes: ${latestEntry.notes || 'No notes'}`,
+					default: true,
+				},
+			]);
+
+			if (startExisting) {
+				await this.harvestService.restartTimer(latestEntry.id);
+				Logger.success('Existing timer restarted successfully');
+				return;
+			}
+		}
+
 		const { addNotes } = await inquirer.prompt<{ addNotes: boolean }>([
 			{
 				type: 'confirm',

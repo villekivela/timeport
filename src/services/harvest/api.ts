@@ -14,6 +14,20 @@ export class HarvestService {
 		this.#headers = getHarvestHeaders(config.harvest.accessToken!, config.harvest.accountId!);
 	}
 
+	async restartTimer(id: number) {
+		this.#updateHeaders();
+		const response = await fetch(`${this.#baseUrl}/time_entries/${id}/restart`, {
+			method: 'PATCH',
+			headers: this.#headers,
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to restart timer: ${response.statusText}`);
+		}
+
+		await response.json();
+	}
+
 	async startTimer(notes: string = ''): Promise<void> {
 		this.#updateHeaders();
 		const response = await fetch(`${this.#baseUrl}/time_entries`, {
@@ -91,5 +105,21 @@ export class HarvestService {
 
 		const data = (await response.json()) as { time_entries?: TimeEntry[] };
 		return data.time_entries?.[0] || null;
+	}
+
+	async getStoppedTimeEntriesForToday(): Promise<TimeEntry[]> {
+		this.#updateHeaders();
+		const today = new Date().toISOString().split('T')[0];
+		const response = await fetch(`${this.#baseUrl}/time_entries?from=${today}&to=${today}`, {
+			headers: this.#headers,
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to get time entries: ${response.statusText}`);
+		}
+
+		const data = (await response.json()) as { time_entries: TimeEntry[] };
+		// NOTE: Filter for stopped entries (assuming a stopped entry has no end time)
+		return data.time_entries.filter((entry) => !entry.ended_time);
 	}
 }
