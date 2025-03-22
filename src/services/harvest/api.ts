@@ -55,11 +55,14 @@ export class HarvestService {
 			throw new Error('No active timer found');
 		}
 
+		const existingNotes = activeTimer.notes || '';
+		const combinedNotes = existingNotes ? `${existingNotes}\n${notes}` : notes;
+
 		const response = await fetch(`${this.#baseUrl}/time_entries/${activeTimer.id}`, {
 			method: 'PATCH',
 			headers: this.#headers,
 			body: JSON.stringify({
-				notes: notes,
+				notes: combinedNotes,
 			}),
 		});
 
