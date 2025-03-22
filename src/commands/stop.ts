@@ -3,6 +3,7 @@ import { HarvestService } from '../services/harvest/api.js';
 import { Command } from '../types/commands.js';
 import { JiraIssue } from '../types/jira.js';
 import { Logger } from '../utils/logger.js';
+import { generateNotes } from '../utils/note-utils.js';
 
 export class StopTimerCommand implements Command {
 	constructor(private harvestService: HarvestService) {}
@@ -27,11 +28,7 @@ export class StopTimerCommand implements Command {
 				},
 			]);
 
-			const notes = selectedIssues
-				.map((issueKey) => issues.find((issue) => issue.value === issueKey)?.name.trim())
-				.filter(Boolean)
-				.join(', ');
-
+			const notes = generateNotes(selectedIssues, issues);
 			await this.harvestService.stopTimer(notes);
 		} else {
 			await this.harvestService.stopTimer();

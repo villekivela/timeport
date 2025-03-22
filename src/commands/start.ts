@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 import { HarvestService } from '../services/harvest/index.js';
 import { Command, JiraIssue } from '../types/index.js';
 import { Logger } from '../utils/index.js';
+import { generateNotes } from '../utils/note-utils.js';
 
 export class StartTimerCommand implements Command {
 	constructor(private harvestService: HarvestService) {}
@@ -48,11 +49,7 @@ export class StartTimerCommand implements Command {
 				},
 			]);
 
-			const notes = selectedIssues
-				.map((issueKey) => issues.find((issue) => issue.value === issueKey)?.name.trim())
-				.filter(Boolean)
-				.join(', ');
-
+			const notes = generateNotes(selectedIssues, issues);
 			await this.harvestService.startTimer(notes);
 		} else {
 			await this.harvestService.startTimer();

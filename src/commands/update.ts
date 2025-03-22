@@ -3,6 +3,7 @@ import { HarvestService } from '../services/harvest/api.js';
 import { Command } from '../types/commands.js';
 import { JiraIssue } from '../types/jira.js';
 import { Logger } from '../utils/logger.js';
+import { generateNotes } from '../utils/note-utils.js';
 
 export class UpdateTimerCommand implements Command {
 	constructor(private harvestService: HarvestService) {}
@@ -18,11 +19,7 @@ export class UpdateTimerCommand implements Command {
 			},
 		]);
 
-		const notes = selectedIssues
-			.map((issueKey) => issues.find((issue) => issue.value === issueKey)?.name.trim())
-			.filter(Boolean)
-			.join(', ');
-
+		const notes = generateNotes(selectedIssues, issues);
 		await this.harvestService.updateTimer(notes);
 		Logger.success('Timer notes updated successfully');
 	}
